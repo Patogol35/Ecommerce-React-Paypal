@@ -35,24 +35,35 @@ export default function ProductoCard({ producto, onVerDetalle, onAgregar }) {
   const { agregarAlCarrito } = useCarrito();
   const navigate = useNavigate();
 
-  const [imagenActiva, setImagenActiva] = useState(producto.imagen);
+  // =========================
+  // 🔥 IMÁGENES LIMPIAS (SIN DUPLICADOS)
+  // =========================
+  const imagenes = useMemo(() => {
+    const imgs = [
+      producto.imagen,
+      ...(producto.imagenes?.map((img) => img.imagen) || []),
+    ].filter(Boolean);
 
-  // 🔥 imágenes
-  const imagenes = [
-    producto.imagen,
-    ...(producto.imagenes?.map((img) => img.imagen) || []),
-  ].filter(Boolean);
+    return [...new Set(imgs)];
+  }, [producto]);
+
+  // 🔥 imagen inicial correcta
+  const [imagenActiva, setImagenActiva] = useState(imagenes[0] || "");
 
   // =========================
   // 🔥 STOCK REAL DESDE VARIANTES
   // =========================
   const stockTotal = useMemo(() => {
-    if (!producto.variantes || producto.variantes.length === 0) return 1; // producto sin variantes
+    if (!producto.variantes || producto.variantes.length === 0) return 1;
     return producto.variantes.reduce((acc, v) => acc + (v.stock || 0), 0);
   }, [producto]);
 
   const tieneVariantes =
     producto.variantes && producto.variantes.length > 0;
+
+  const tieneStockVariantes = producto.variantes?.some(
+    (v) => v.stock > 0
+  );
 
   // =========================
   // 🛒 AGREGAR
@@ -64,9 +75,10 @@ export default function ProductoCard({ producto, onVerDetalle, onAgregar }) {
       return;
     }
 
-    // 🔥 si tiene variantes → no permitir desde card
+    // 🔥 si tiene variantes → obligar ir a detalle
     if (tieneVariantes) {
       toast.info("Selecciona talla y color en el detalle 👇");
+
       if (onVerDetalle) {
         onVerDetalle();
       } else {
@@ -83,10 +95,10 @@ export default function ProductoCard({ producto, onVerDetalle, onAgregar }) {
     }
 
     try {
-      await agregarAlCarrito(producto.id, 1, null); // 🔥 sin variante
+      await agregarAlCarrito(producto.id, 1, null);
       toast.success(`${producto.nombre} agregado al carrito ✅`);
     } catch (e) {
-      toast.error(e.message);
+      toast.error(e.message || "Error al agregar");
     }
   };
 
@@ -96,7 +108,7 @@ export default function ProductoCard({ producto, onVerDetalle, onAgregar }) {
       <Box sx={imagenBoxSx}>
         <Box
           component="img"
-          src={imagenActiva}
+          src={imagenActiva || "/placeholder.png"} // 🔥 fallback
           alt={producto.nombre}
           sx={imagenSx}
         />
@@ -148,6 +160,16 @@ export default function ProductoCard({ producto, onVerDetalle, onAgregar }) {
           {producto.nombre}
         </Typography>
 
+        {/* 🔥 Indicador de variantes */}
+        {tieneVariantes && (
+          <Chip
+            label="Seleccionar talla/color"
+            color="info"
+            size="small"
+            sx={{ mb: 1 }}
+          />
+        )}
+
         {/* Precio */}
         <Stack
           direction="row"
@@ -157,7 +179,7 @@ export default function ProductoCard({ producto, onVerDetalle, onAgregar }) {
         >
           <MonetizationOnIcon color="primary" />
           <Typography variant="h6" color="primary" fontWeight="bold">
-            {producto.precio}
+            ${producto.precio}
           </Typography>
         </Stack>
 
@@ -172,9 +194,19 @@ export default function ProductoCard({ producto, onVerDetalle, onAgregar }) {
             startIcon={<AddShoppingCartIcon />}
             sx={botonAgregarSx(stockTotal)}
             onClick={onAdd}
-            disabled={stockTotal === 0}
+            disabled={
+              tieneVariantes
+                ? !tieneStockVariantes
+                : stockTotal === 0
+            }
           >
-            {stockTotal > 0 ? "Agregar al carrito" : "Agotado"}
+            {tieneVariantes
+              ? tieneStockVariantes
+                ? "Seleccionar opciones"
+                : "Agotado"
+              : stockTotal > 0
+              ? "Agregar al carrito"
+              : "Agotado"}
           </Button>
 
           <Button
