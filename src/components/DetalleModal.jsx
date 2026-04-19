@@ -15,8 +15,8 @@ import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import detalleModalStyles from "./DetalleModal.styles";
 
-// 🔥 reutilizamos el estilo del card (IMPORTANTE)
-import { botonAgregarSx } from "../components/ProductoCard.styles"; // ajusta ruta
+// 🔥 reutilizamos el estilo del card
+import { botonAgregarSx } from "../components/ProductoCard.styles";
 
 export default function DetalleModal({
   producto,
@@ -48,7 +48,9 @@ export default function DetalleModal({
     return [...new Set(imgs)];
   }, [producto, varianteSeleccionada]);
 
-  // 🔥 STOCK TOTAL (igual que card)
+  // =========================
+  // 📦 STOCK TOTAL
+  // =========================
   const stockTotal = useMemo(() => {
     if (!producto.variantes || producto.variantes.length === 0) {
       return 1;
@@ -59,14 +61,18 @@ export default function DetalleModal({
     );
   }, [producto]);
 
-  // Reset al abrir
+  // =========================
+  // 🔄 RESET AL ABRIR
+  // =========================
   useEffect(() => {
     if (open) {
       setVarianteSeleccionada(null);
     }
   }, [open]);
 
-  // Cambiar imagen según variante
+  // =========================
+  // 🔄 CAMBIO DE IMAGEN
+  // =========================
   useEffect(() => {
     if (varianteSeleccionada?.imagenes?.length > 0) {
       setImagenActiva(varianteSeleccionada.imagenes[0].imagen);
@@ -84,7 +90,7 @@ export default function DetalleModal({
   );
 
   // =========================
-  // 🛒 AGREGAR
+  // 🛒 AGREGAR AL CARRITO
   // =========================
   const handleAgregar = async () => {
     if (!isAuthenticated) {
@@ -120,13 +126,13 @@ export default function DetalleModal({
       sx={detalleModalStyles.dialog}
       PaperProps={{ sx: detalleModalStyles.dialogPaper }}
     >
-      {/* Cerrar */}
+      {/* ❌ Cerrar */}
       <IconButton onClick={onClose} sx={detalleModalStyles.botonCerrar}>
         <CloseIcon />
       </IconButton>
 
       <Stack spacing={3} alignItems="center">
-        {/* IMAGEN PRINCIPAL */}
+        {/* 🖼 IMAGEN PRINCIPAL */}
         <Box
           sx={detalleModalStyles.sliderBox}
           onClick={() => setLightbox && setLightbox(imagenSegura)}
@@ -139,7 +145,7 @@ export default function DetalleModal({
           />
         </Box>
 
-        {/* MINIATURAS */}
+        {/* 🧩 MINIATURAS */}
         {imagenes.length > 1 && (
           <Stack direction="row" spacing={1}>
             {imagenes.map((img, i) => (
@@ -166,7 +172,7 @@ export default function DetalleModal({
           </Stack>
         )}
 
-        {/* INFO */}
+        {/* 📄 INFO */}
         <Box textAlign="center">
           <Typography variant="h5" fontWeight="bold">
             {producto.nombre}
@@ -177,7 +183,7 @@ export default function DetalleModal({
           </Typography>
         </Box>
 
-        {/* VARIANTES */}
+        {/* 🎯 VARIANTES */}
         {tieneVariantes && (
           <Stack spacing={2} alignItems="center">
             <Typography fontWeight="bold">
@@ -189,32 +195,42 @@ export default function DetalleModal({
             )}
 
             <Stack direction="row" flexWrap="wrap" gap={1}>
-              {producto.variantes.map((v) => {
-                const label = `${v.talla || ""} ${v.color || ""}`.trim();
+              {producto.variantes.map((v) => (
+                <Button
+                  key={v.id}
+                  variant={
+                    varianteSeleccionada?.id === v.id
+                      ? "contained"
+                      : "outlined"
+                  }
+                  onClick={() => setVarianteSeleccionada(v)}
+                  disabled={v.stock === 0}
+                  sx={{
+                    opacity: v.stock === 0 ? 0.5 : 1,
+                    textTransform: "none",
+                    borderRadius: 2,
+                    display: "flex",
+                    gap: 0.5,
+                    alignItems: "center",
+                  }}
+                >
+                  {/* 🔥 ATRIBUTOS DINÁMICOS */}
+                  {[v.talla, v.color, v.modelo, v.capacidad]
+                    .filter(Boolean)
+                    .map((attr, i) => (
+                      <Chip
+                        key={i}
+                        label={attr}
+                        size="small"
+                      />
+                    ))}
 
-                return (
-                  <Button
-                    key={v.id}
-                    variant={
-                      varianteSeleccionada?.id === v.id
-                        ? "contained"
-                        : "outlined"
-                    }
-                    onClick={() => setVarianteSeleccionada(v)}
-                    disabled={v.stock === 0}
-                    sx={{
-                      opacity: v.stock === 0 ? 0.5 : 1,
-                      textTransform: "none",
-                      borderRadius: 2,
-                    }}
-                  >
-                    {label || "Única"} ({v.stock})
-                  </Button>
-                );
-              })}
+                  ({v.stock})
+                </Button>
+              ))}
             </Stack>
 
-            {/* STOCK DINÁMICO */}
+            {/* 📦 STOCK VARIANTE */}
             {varianteSeleccionada && (
               <Chip
                 label={`Stock: ${varianteSeleccionada.stock}`}
@@ -228,7 +244,7 @@ export default function DetalleModal({
           </Stack>
         )}
 
-        {/* 🔥 BOTÓN CORREGIDO */}
+        {/* 🛒 BOTÓN */}
         <Box
           sx={{
             width: "100%",
@@ -267,4 +283,4 @@ export default function DetalleModal({
       </Stack>
     </Dialog>
   );
-                      }
+}
