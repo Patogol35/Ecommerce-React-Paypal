@@ -27,13 +27,26 @@ export default function CarritoItem({
   // 🔥 STOCK REAL (VARIANTE > PRODUCTO)
   const stock = it.variante?.stock ?? 0;
 
+  // =========================
+  // 🖼 IMAGEN DINÁMICA
+  // =========================
+  const imagen =
+    it.variante?.imagenes?.[0]?.imagen || // 🔥 variante primero
+    it.producto?.imagenes?.[0]?.imagen || // luego imágenes producto
+    it.producto?.imagen || // fallback principal
+    "/placeholder.png"; // último fallback
+
+  const altTexto = it.variante
+    ? `${it.producto?.nombre} ${it.variante.color || ""}`
+    : it.producto?.nombre;
+
   return (
     <Card sx={carritoItemStyles.card}>
       {/* Imagen */}
       <CardMedia
         component="img"
-        image={it.producto?.imagen || undefined}
-        alt={it.producto?.nombre}
+        image={imagen}
+        alt={altTexto}
         sx={(theme) => carritoItemStyles.media(theme)}
       />
 
