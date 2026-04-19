@@ -124,7 +124,7 @@ export default function Login() {
 
     try {
       const res = await fetch(
-        "https://ecommerce-django-e44l.onrender.com/api/google-login/",
+        "https://backvariantes.onrender.com/api/google-login/",
         {
           method: "POST",
           headers: {
