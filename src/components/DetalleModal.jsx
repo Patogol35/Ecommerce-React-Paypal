@@ -26,7 +26,7 @@ export default function DetalleModal({
   if (!producto) return null;
 
   // =========================
-  // 🖼 IMÁGENES (NORMALIZADAS)
+  // 🖼 IMÁGENES
   // =========================
   const imagenes = useMemo(() => {
     const imgs = [
@@ -49,15 +49,14 @@ export default function DetalleModal({
 
   const imagenSegura = imagenActiva || imagenes[0] || "/placeholder.png";
 
-  const tieneVariantes =
-    producto.variantes && producto.variantes.length > 0;
+  const tieneVariantes = producto.variantes?.length > 0;
 
   const tieneStockVariantes = producto.variantes?.some(
     (v) => v.stock > 0
   );
 
   // =========================
-  // 🛒 AGREGAR
+  // 🛒 AGREGAR (CORREGIDO)
   // =========================
   const handleAgregar = async () => {
     if (!isAuthenticated) {
@@ -73,8 +72,8 @@ export default function DetalleModal({
     try {
       await agregarAlCarrito(
         producto.id,
-        1,
-        varianteSeleccionada?.id || null
+        varianteSeleccionada?.id || null, // ✅ variante correcta
+        1 // ✅ cantidad correcta
       );
 
       toast.success("Producto agregado ✅");
@@ -99,9 +98,7 @@ export default function DetalleModal({
       </IconButton>
 
       <Stack spacing={3} alignItems="center">
-        {/* =========================
-            🖼 IMAGEN PRINCIPAL
-        ========================= */}
+        {/* IMAGEN */}
         <Box
           sx={detalleModalStyles.sliderBox}
           onClick={() => setLightbox && setLightbox(imagenSegura)}
@@ -139,9 +136,7 @@ export default function DetalleModal({
           </Stack>
         )}
 
-        {/* =========================
-            📄 INFO
-        ========================= */}
+        {/* INFO */}
         <Box textAlign="center">
           <Typography variant="h5" fontWeight="bold">
             {producto.nombre}
@@ -152,9 +147,7 @@ export default function DetalleModal({
           </Typography>
         </Box>
 
-        {/* =========================
-            🔥 VARIANTES (MEJOR UX)
-        ========================= */}
+        {/* VARIANTES */}
         {tieneVariantes && (
           <Stack spacing={2} alignItems="center">
             <Typography fontWeight="bold">
@@ -167,7 +160,7 @@ export default function DetalleModal({
 
             <Stack direction="row" flexWrap="wrap" gap={1}>
               {producto.variantes.map((v) => {
-                const label = `${v.talla || ""} ${v.color || ""}`;
+                const label = `${v.talla || ""} ${v.color || ""}`.trim();
 
                 return (
                   <Button
@@ -188,19 +181,28 @@ export default function DetalleModal({
                 );
               })}
             </Stack>
+
+            {/* 🔥 STOCK DINÁMICO */}
+            {varianteSeleccionada && (
+              <Chip
+                label={`Stock: ${varianteSeleccionada.stock}`}
+                color={
+                  varianteSeleccionada.stock > 0 ? "success" : "default"
+                }
+              />
+            )}
           </Stack>
         )}
 
-        {/* =========================
-            🛒 BOTÓN
-        ========================= */}
+        {/* BOTÓN */}
         <Button
           variant="contained"
           fullWidth
           onClick={handleAgregar}
           disabled={
             tieneVariantes
-              ? !varianteSeleccionada || !tieneStockVariantes
+              ? !varianteSeleccionada ||
+                varianteSeleccionada.stock === 0
               : false
           }
         >
@@ -211,4 +213,4 @@ export default function DetalleModal({
       </Stack>
     </Dialog>
   );
-}
+        }
