@@ -1,175 +1,141 @@
-import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import {
-  agregarAlCarrito as apiAgregar,
-  getCarrito as apiGetCarrito,
-  eliminarDelCarrito as apiEliminar,
-  setCantidadItem as apiSetCantidad,
-} from "../api/api";
-import { useAuth } from "../context/AuthContext";
+  Card,
+  CardMedia,
+  CardContent,
+  Box,
+  Typography,
+  Chip,
+  TextField,
+  IconButton,
+} from "@mui/material";
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { toast } from "react-toastify";
+import { calcularSubtotal } from "../utils/carritoUtils";
+import carritoItemStyles from "./CarritoItem.styles";
 
-const CarritoContext = createContext();
-
-export function CarritoProvider({ children }) {
-  const { access } = useAuth();
-  const [carrito, setCarrito] = useState({ items: [] });
-  const [loading, setLoading] = useState(false);
-
-  // =====================
-  // 🔄 CARGAR CARRITO
-  // =====================
-  const cargarCarrito = async () => {
-    if (!access) {
-      setCarrito({ items: [] });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const data = await apiGetCarrito(access);
-      setCarrito(data);
-    } catch (e) {
-      console.error(e);
-      setCarrito({ items: [] });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    cargarCarrito();
-  }, [access]);
-
-  // =====================
-  // 🔥 ACTUALIZAR CANTIDAD (FIX CLAVE)
-  // =====================
-  const setCantidad = async (itemId, cantidad) => {
-    if (!access) throw new Error("Debes iniciar sesión.");
-    if (cantidad < 1) return;
-
-    try {
-      await apiSetCantidad(itemId, cantidad, access);
-
-      // 🔥🔥🔥 CLAVE → sincronizar con backend
-      await cargarCarrito();
-
-    } catch (e) {
-      console.error(e);
-      toast.error(
-        e?.response?.data?.error ||
-          e.message ||
-          "No se pudo actualizar la cantidad"
-      );
-    }
-  };
-
-  // =====================
-  // 🛒 AGREGAR AL CARRITO
-  // =====================
-  const agregarAlCarrito = async (
-    producto_id,
-    cantidad = 1,
-    variante_id = null
-  ) => {
-    if (!access) throw new Error("Debes iniciar sesión.");
-
-    try {
-      const nuevoItem = await apiAgregar(
-        producto_id,
-        cantidad,
-        access,
-        variante_id
-      );
-
-      setCarrito((prev) => {
-        const index = prev.items.findIndex(
-          (it) =>
-            it.producto.id === nuevoItem.producto.id &&
-            (it.variante?.id || null) ===
-              (nuevoItem.variante?.id || null)
-        );
-
-        if (index !== -1) {
-          const updated = [...prev.items];
-          updated[index] = nuevoItem;
-          return { ...prev, items: updated };
-        }
-
-        return { ...prev, items: [...prev.items, nuevoItem] };
-      });
-
-      toast.success("Producto agregado 🛒");
-    } catch (e) {
-      console.error(e);
-      toast.error(
-        e?.response?.data?.error ||
-          e.message ||
-          "No se pudo agregar el producto"
-      );
-      throw e;
-    }
-  };
-
-  // =====================
-  // ❌ ELIMINAR ITEM
-  // =====================
-  const eliminarItem = async (itemId) => {
-    if (!access) throw new Error("Debes iniciar sesión.");
-
-    try {
-      await apiEliminar(itemId, access);
-
-      setCarrito((prev) => ({
-        ...prev,
-        items: prev.items.filter((it) => it.id !== itemId),
-      }));
-
-      toast.warn("Producto eliminado 🗑️");
-    } catch (e) {
-      console.error(e);
-      toast.error(
-        e?.response?.data?.error ||
-          e.message ||
-          "No se pudo eliminar el producto"
-      );
-    }
-  };
-
-  // =====================
-  // 🧹 LIMPIAR LOCAL
-  // =====================
-  const limpiarLocal = () => setCarrito({ items: [] });
-
-  // =====================
-  // 💰 TOTAL
-  // =====================
-  const total = useMemo(() => {
-    return carrito.items.reduce(
-      (acc, it) => acc + (it.subtotal || 0),
-      0
-    );
-  }, [carrito]);
-
-  const value = useMemo(
-    () => ({
-      carrito,
-      items: carrito.items || [],
-      total,
-      loading,
-      cargarCarrito,
-      agregarAlCarrito,
-      setCantidad,
-      eliminarItem,
-      limpiarLocal,
-    }),
-    [carrito, loading, total]
-  );
+export default function CarritoItem({
+  it,
+  theme,
+  incrementar,
+  decrementar,
+  setCantidad,
+  eliminarItem,
+}) {
+  // 🔥 STOCK REAL (VARIANTE > PRODUCTO)
+  const stock = it.variante?.stock ?? 0;
 
   return (
-    <CarritoContext.Provider value={value}>
-      {children}
-    </CarritoContext.Provider>
+    <Card sx={carritoItemStyles.card}>
+      {/* Imagen */}
+      <CardMedia
+        component="img"
+        image={it.producto?.imagen || undefined}
+        alt={it.producto?.nombre}
+        sx={(theme) => carritoItemStyles.media(theme)}
+      />
+
+      {/* INFO */}
+      <CardContent sx={carritoItemStyles.content}>
+        <Box>
+          <Typography variant="h6" fontWeight="bold" gutterBottom>
+            {it.producto?.nombre}
+          </Typography>
+
+          {/* 🔥 VARIANTE */}
+          {it.variante && (
+            <Typography variant="body2" color="text.secondary">
+              {it.variante.talla && `Talla: ${it.variante.talla}`}{" "}
+              {it.variante.color && `Color: ${it.variante.color}`}
+            </Typography>
+          )}
+
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={carritoItemStyles.descripcion}
+          >
+            {it.producto?.descripcion}
+          </Typography>
+        </Box>
+
+        {/* PRECIO + STOCK */}
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          <Chip
+            icon={<MonetizationOnIcon />}
+            label={`$${calcularSubtotal(it).toFixed(2)}`}
+            color="success"
+            sx={carritoItemStyles.chipSubtotal}
+          />
+
+          <Chip
+            label={`Stock: ${stock}`}
+            color={stock > 0 ? "info" : "default"}
+            sx={carritoItemStyles.chipStock}
+          />
+        </Box>
+      </CardContent>
+
+      {/* CONTROLES */}
+      <Box sx={carritoItemStyles.controlesWrapper}>
+        <Box sx={carritoItemStyles.cantidadWrapper}>
+          {/* RESTAR */}
+          <IconButton
+            onClick={() => decrementar(it)}
+            disabled={it.cantidad <= 1}
+            sx={carritoItemStyles.botonCantidad}
+          >
+            <RemoveIcon />
+          </IconButton>
+
+          {/* INPUT */}
+          <TextField
+            type="number"
+            size="small"
+            value={it.cantidad}
+            inputProps={{ min: 1, max: stock }}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (value === "") {
+                setCantidad(it.id, 1);
+                return;
+              }
+
+              const nuevaCantidad = Number(value);
+
+              if (nuevaCantidad >= 1 && nuevaCantidad <= stock) {
+                setCantidad(it.id, nuevaCantidad);
+              } else if (nuevaCantidad > stock) {
+                toast.warning(`Solo hay ${stock} unidades`);
+                setCantidad(it.id, stock);
+              } else {
+                setCantidad(it.id, 1);
+              }
+            }}
+            sx={carritoItemStyles.cantidadInput}
+          />
+
+          {/* SUMAR */}
+          <IconButton
+            onClick={() => incrementar(it)}
+            disabled={it.cantidad >= stock}
+            sx={carritoItemStyles.botonCantidad}
+          >
+            <AddIcon />
+          </IconButton>
+        </Box>
+
+        {/* ELIMINAR */}
+        <IconButton
+          onClick={() => eliminarItem(it.id)}
+          sx={carritoItemStyles.botonEliminar}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Box>
+    </Card>
   );
 }
-
-export const useCarrito = () => useContext(CarritoContext);
