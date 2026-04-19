@@ -35,7 +35,7 @@ export default function CarritoItem({
     it.producto?.imagen ||
     "/placeholder.png";
 
-  // ✅ FIX CRÍTICO (esto rompía todo)
+  // ✅ FIX CRÍTICO
   const altTexto = it.variante
     ? `${it.producto?.nombre} ${it.variante.color || ""}`
     : it.producto?.nombre;
@@ -147,14 +147,13 @@ export default function CarritoItem({
           </IconButton>
         </Box>
 
-        {/* 🟥 ELIMINAR PRO */}
+        {/* 🟥 ELIMINAR */}
         <IconButton
           onClick={handleEliminar}
           sx={{
             color: "#d32f2f",
             "&:hover": {
               backgroundColor: "rgba(211,47,47,0.1)",
-              transform: "scale(1.1)",
             },
           }}
         >
@@ -163,4 +162,4 @@ export default function CarritoItem({
       </Box>
     </Card>
   );
-}
+              }
