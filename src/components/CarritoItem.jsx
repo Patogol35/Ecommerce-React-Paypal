@@ -23,8 +23,10 @@ export default function CarritoItem({
   setCantidad,
   eliminarItem,
 }) {
-  const stock = it.variante?.stock ?? 0;
+  // 🔥 STOCK REAL
+  const stock = it.variante?.stock ?? it.producto?.stock ?? 0;
 
+  // 🖼 IMAGEN
   const imagen =
     it.variante?.imagenes?.[0]?.imagen ||
     it.producto?.imagenes?.[0]?.imagen ||
@@ -35,13 +37,19 @@ export default function CarritoItem({
     ? `${it.producto?.nombre} ${it.variante.color || ""}`
     : it.producto?.nombre;
 
+  // 🗑 eliminar con toast
   const handleEliminar = () => {
     eliminarItem(it.id);
-    toast.info("🗑 Producto eliminado del carrito");
+    toast.info("🗑 Producto eliminado");
   };
 
   return (
-    <Card sx={carritoItemStyles.card}>
+    <Card
+      sx={{
+        ...carritoItemStyles.card,
+        opacity: stock === 0 ? 0.6 : 1,
+      }}
+    >
       {/* Imagen */}
       <CardMedia
         component="img"
@@ -80,11 +88,13 @@ export default function CarritoItem({
             icon={<MonetizationOnIcon />}
             label={`$${calcularSubtotal(it).toFixed(2)}`}
             color="success"
+            sx={carritoItemStyles.chipSubtotal}
           />
 
           <Chip
             label={stock > 0 ? `Stock: ${stock}` : "Agotado"}
             color={stock > 0 ? "info" : "error"}
+            sx={carritoItemStyles.chipStock}
           />
         </Box>
       </CardContent>
@@ -96,6 +106,7 @@ export default function CarritoItem({
           <IconButton
             onClick={() => decrementar(it)}
             disabled={it.cantidad <= 1 || stock === 0}
+            sx={carritoItemStyles.botonCantidad}
           >
             <RemoveIcon />
           </IconButton>
@@ -126,22 +137,27 @@ export default function CarritoItem({
                 setCantidad(it.id, 1);
               }
             }}
+            sx={carritoItemStyles.cantidadInput}
           />
 
           {/* SUMAR */}
           <IconButton
             onClick={() => incrementar(it)}
             disabled={it.cantidad >= stock || stock === 0}
+            sx={carritoItemStyles.botonCantidad}
           >
             <AddIcon />
           </IconButton>
         </Box>
 
         {/* ELIMINAR */}
-        <IconButton onClick={handleEliminar}>
+        <IconButton
+          onClick={handleEliminar}
+          sx={carritoItemStyles.botonEliminar}
+        >
           <DeleteIcon />
         </IconButton>
       </Box>
     </Card>
   );
-                         }
+}
