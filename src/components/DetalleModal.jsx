@@ -30,7 +30,8 @@ export default function DetalleModal({
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  if (!producto) return null;
+  // 🔥 EVITA CRASH TOTAL
+  if (!open || !producto) return null;
 
   const [imagenActiva, setImagenActiva] = useState("");
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
@@ -42,8 +43,8 @@ export default function DetalleModal({
     }
 
     const imgs = [
-      producto.imagen,
-      ...(producto.imagenes?.map((img) => img.imagen) || []),
+      producto?.imagen,
+      ...(producto?.imagenes?.map((img) => img.imagen) || []),
     ].filter(Boolean);
 
     return [...new Set(imgs)];
@@ -51,14 +52,15 @@ export default function DetalleModal({
 
   // 📦 STOCK
   const stockTotal = useMemo(() => {
-    if (!producto.variantes?.length) return 1;
+    if (!producto?.variantes?.length) return 1;
+
     return producto.variantes.reduce(
-      (acc, v) => acc + (v.stock || 0),
+      (acc, v) => acc + (v?.stock || 0),
       0
     );
   }, [producto]);
 
-  // 🔥 RESET CUANDO ABRE EN COMPRA
+  // 🔥 RESET
   useEffect(() => {
     if (open && modo === "compra") {
       setVarianteSeleccionada(null);
@@ -75,18 +77,19 @@ export default function DetalleModal({
 
   const imagenSegura = imagenActiva || imagenes[0] || "/placeholder.png";
 
-  const tieneVariantes = producto.variantes?.length > 0;
-  const tieneStockVariantes = producto.variantes?.some(
-    (v) => v.stock > 0
+  const tieneVariantes = (producto?.variantes || []).length > 0;
+
+  const tieneStockVariantes = (producto?.variantes || []).some(
+    (v) => v?.stock > 0
   );
 
   const precioActual =
-    varianteSeleccionada?.precio ?? producto.precio;
+    varianteSeleccionada?.precio ?? producto?.precio;
 
   // 🛒 AGREGAR
   const handleAgregar = async () => {
     if (!isAuthenticated) {
-      toast.error("Debes iniciar sesión para agregar productos");
+      toast.error("Debes iniciar sesión");
 
       navigate("/login", {
         state: { redirect: `/producto/${producto.id}` },
@@ -108,9 +111,9 @@ export default function DetalleModal({
       );
 
       toast.success("Producto agregado ✅");
-      onClose();
+      onClose && onClose();
     } catch (e) {
-      toast.error(e.message || "Error al agregar");
+      toast.error(e?.message || "Error al agregar");
     }
   };
 
@@ -120,31 +123,38 @@ export default function DetalleModal({
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      sx={detalleModalStyles.dialog}
-      PaperProps={{ sx: detalleModalStyles.dialogPaper }}
+      sx={detalleModalStyles?.dialog}
+      PaperProps={{ sx: detalleModalStyles?.dialogPaper }}
     >
-      <IconButton onClick={onClose} sx={detalleModalStyles.botonCerrar}>
+      <IconButton
+        onClick={onClose}
+        sx={detalleModalStyles?.botonCerrar}
+      >
         <CloseIcon />
       </IconButton>
 
       <Stack spacing={3} alignItems="center">
         {/* IMAGEN */}
         <Box
-          sx={detalleModalStyles.sliderBox}
+          sx={detalleModalStyles?.sliderBox}
           onClick={() => setLightbox && setLightbox(imagenSegura)}
         >
           <Box
             component="img"
             src={imagenSegura}
-            alt={producto.nombre}
-            sx={detalleModalStyles.imagen}
+            alt={producto?.nombre}
+            sx={detalleModalStyles?.imagen}
           />
         </Box>
 
-        {/* 💰 PRECIO */}
+        {/* PRECIO */}
         <Stack direction="row" alignItems="center" spacing={1}>
           <AttachMoneyIcon color="success" />
-          <Typography variant="h5" fontWeight="bold" color="success.main">
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            color="success.main"
+          >
             {precioActual}
           </Typography>
         </Stack>
@@ -177,15 +187,15 @@ export default function DetalleModal({
         {/* INFO */}
         <Box textAlign="center">
           <Typography variant="h5" fontWeight="bold">
-            {producto.nombre}
+            {producto?.nombre}
           </Typography>
 
           <Typography sx={{ mt: 1 }}>
-            {producto.descripcion}
+            {producto?.descripcion}
           </Typography>
         </Box>
 
-        {/* 🔥 VARIANTES */}
+        {/* VARIANTES */}
         {tieneVariantes && modo === "compra" && (
           <Stack spacing={2} alignItems="center">
             <Typography fontWeight="bold">
@@ -202,8 +212,9 @@ export default function DetalleModal({
               gap={1.5}
               justifyContent="center"
             >
-              {producto.variantes.map((v) => {
-                const isSelected = varianteSeleccionada?.id === v.id;
+              {(producto.variantes || []).map((v) => {
+                const isSelected =
+                  varianteSeleccionada?.id === v.id;
 
                 const label = [...new Set(
                   [v.talla, v.color, v.modelo, v.capacidad]
@@ -215,7 +226,7 @@ export default function DetalleModal({
                   <Button
                     key={v.id}
                     onClick={() => setVarianteSeleccionada(v)}
-                    disabled={v.stock === 0}
+                    disabled={!v?.stock}
                     sx={{
                       px: 2.5,
                       py: 1,
@@ -225,7 +236,7 @@ export default function DetalleModal({
                       border: "1px solid #ddd",
                       backgroundColor: isSelected ? "#111" : "#fff",
                       color: isSelected ? "#fff" : "#333",
-                      opacity: v.stock === 0 ? 0.4 : 1,
+                      opacity: !v?.stock ? 0.4 : 1,
                     }}
                   >
                     {label || "Única"}
@@ -247,7 +258,7 @@ export default function DetalleModal({
           </Stack>
         )}
 
-        {/* 🔥 BOTÓN FINAL */}
+        {/* BOTÓN */}
         <Box
           sx={{
             width: "100%",
@@ -263,17 +274,11 @@ export default function DetalleModal({
               onClick={() => {
                 if (!isAuthenticated) {
                   toast.error("Debes iniciar sesión");
-
-                  navigate("/login", {
-                    state: {
-                      redirect: `/producto/${producto.id}`,
-                    },
-                  });
-
+                  navigate("/login");
                   return;
                 }
 
-                setModo("compra");
+                setModo && setModo("compra");
               }}
               sx={{
                 maxWidth: 400,
@@ -281,7 +286,7 @@ export default function DetalleModal({
                 backgroundColor: "#2196f3",
               }}
             >
-              Agregar al Carrito 
+              Seleccionar opciones
             </Button>
           ) : (
             <Button
@@ -289,14 +294,16 @@ export default function DetalleModal({
               startIcon={<AddShoppingCartIcon />}
               onClick={handleAgregar}
               sx={{
-                ...botonAgregarSx(stockTotal),
+                ...(botonAgregarSx
+                  ? botonAgregarSx(stockTotal)
+                  : {}),
                 maxWidth: 400,
                 width: "100%",
               }}
               disabled={
                 tieneVariantes
                   ? !varianteSeleccionada ||
-                    varianteSeleccionada.stock === 0
+                    !varianteSeleccionada?.stock
                   : stockTotal === 0
               }
             >
@@ -315,4 +322,4 @@ export default function DetalleModal({
       </Stack>
     </Dialog>
   );
-}
+                  }
