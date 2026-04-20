@@ -46,32 +46,44 @@ export default function Carrito() {
   );
 
   // =========================
-  // 🛒 COMPRAR
+  // 🛒 COMPRAR (MEJORADO)
   // =========================
   const comprar = async () => {
     try {
+      // 🔄 sincroniza carrito antes de comprar
+      await cargarCarrito();
+
       const res = await crearPedido(access);
 
       if (res?.error) {
-        toast.error(res.error);
-        return;
+        throw new Error(res.error);
       }
 
       toast.success("Pedido realizado ✅");
       limpiarLocal();
       navigate("/pedidos");
+
     } catch (e) {
-      toast.error(e.message || "Ocurrió un error en la compra");
+      const errorMsg =
+        e?.response?.data?.error || e.message || "";
+
+      // 🔥 detectar error de stock
+      if (errorMsg.toLowerCase().includes("stock")) {
+        toast.warning("El stock cambió, actualizando carrito...");
+        await cargarCarrito();
+      } else {
+        toast.error("Ocurrió un error en la compra");
+      }
     }
   };
 
   // =========================
-  // 🔼 INCREMENTAR (🔥 FIX VARIANTES)
+  // 🔼 INCREMENTAR
   // =========================
   const incrementar = (it) => {
     const stock = it.variante
       ? it.variante.stock
-      : 999; // producto sin variantes
+      : 999;
 
     if (it.cantidad < stock) {
       setCantidad(it.id, it.cantidad + 1);
@@ -147,4 +159,4 @@ export default function Carrito() {
       )}
     </Box>
   );
-}
+      }
