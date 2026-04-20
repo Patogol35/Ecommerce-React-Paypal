@@ -1,301 +1,263 @@
-import {
-  Box,
-  Typography,
-  Stack,
-  IconButton,
-  Dialog,
-  Button,
-  Chip,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import { useState, useEffect, useMemo } from "react";
-import { useCarrito } from "../context/CarritoContext";
+import { useState, useCallback } from "react";
+import { login as apiLogin } from "../api/api";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom"; // 🔥 NUEVO
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import detalleModalStyles from "./DetalleModal.styles";
-import { botonAgregarSx } from "../components/ProductoCard.styles";
 
-export default function DetalleModal({
-  producto,
-  open,
-  onClose,
-  setLightbox,
-  modo = "compra",
-  setModo,
-}) {
-  const { agregarAlCarrito } = useCarrito();
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate(); // 🔥 NUEVO
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  CircularProgress,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 
-  if (!producto) return null;
+import { useTheme } from "@mui/material/styles";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import PersonOutline from "@mui/icons-material/PersonOutline";
+import LockOutlined from "@mui/icons-material/LockOutlined";
 
-  const [imagenActiva, setImagenActiva] = useState("");
-  const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
+import { GoogleLogin } from "@react-oauth/google";
 
-  // 🖼 IMÁGENES
-  const imagenes = useMemo(() => {
-    if (varianteSeleccionada?.imagenes?.length > 0) {
-      return varianteSeleccionada.imagenes.map((img) => img.imagen);
+import loginStyles from "./Login.styles";
+
+// =====================
+// VALIDACIONES
+// =====================
+const validators = {
+  username: (v) => (!v.trim() ? "El usuario es obligatorio" : null),
+  password: (v) => (!v.trim() ? "La contraseña es obligatoria" : null),
+};
+
+export default function Login() {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const [form, setForm] = useState({ username: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // =====================
+  // HANDLERS
+  // =====================
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword((prev) => !prev);
+  }, []);
+
+  const validateForm = useCallback(() => {
+    for (const key in validators) {
+      const error = validators[key](form[key]);
+      if (error) {
+        toast.error(error);
+        return false;
+      }
     }
+    return true;
+  }, [form]);
 
-    const imgs = [
-      producto.imagen,
-      ...(producto.imagenes?.map((img) => img.imagen) || []),
-    ].filter(Boolean);
+  const handleErrors = useCallback((error) => {
+    const data = error?.response?.data;
+    const status = error?.response?.status;
 
-    return [...new Set(imgs)];
-  }, [producto, varianteSeleccionada]);
+    let message =
+      data?.message ||
+      data?.detail ||
+      (status === 401 && "Usuario o contraseña incorrectos");
 
-  // 📦 STOCK
-  const stockTotal = useMemo(() => {
-    if (!producto.variantes?.length) return 1;
-    return producto.variantes.reduce(
-      (acc, v) => acc + (v.stock || 0),
-      0
-    );
-  }, [producto]);
-
-  // 🔥 RESET SOLO CUANDO ABRE EN COMPRA
-  useEffect(() => {
-    if (open && modo === "compra") {
-      setVarianteSeleccionada(null);
-    }
-  }, [open, modo]);
-
-  useEffect(() => {
-    if (varianteSeleccionada?.imagenes?.length > 0) {
-      setImagenActiva(varianteSeleccionada.imagenes[0].imagen);
-    } else {
-      setImagenActiva(imagenes[0] || "");
-    }
-  }, [varianteSeleccionada, imagenes]);
-
-  const imagenSegura = imagenActiva || imagenes[0] || "/placeholder.png";
-
-  const tieneVariantes = producto.variantes?.length > 0;
-  const tieneStockVariantes = producto.variantes?.some(
-    (v) => v.stock > 0
-  );
-
-  const precioActual =
-    varianteSeleccionada?.precio ?? producto.precio;
-
-  // 🛒 AGREGAR
-  const handleAgregar = async () => {
-    // 🔥 REDIRECCIÓN AL LOGIN
-    if (!isAuthenticated) {
-      toast.error("Debes iniciar sesión para agregar productos al carrito");
-      navigate("/login"); // 🔥 CLAVE
+    if (!message) {
+      toast.error("Ocurrió un error al iniciar sesión");
       return;
     }
 
-    if (tieneVariantes && !varianteSeleccionada) {
-      toast.error("Selecciona una variante");
-      return;
+    if (message.toLowerCase().includes("credentials")) {
+      message = "Usuario o contraseña incorrectos";
+    }
+
+    toast.error(message);
+  }, []);
+
+  // =====================
+  // LOGIN NORMAL
+  // =====================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (loading || !validateForm()) return;
+
+    setLoading(true);
+    try {
+      const data = await apiLogin(form);
+
+      if (!data?.access || !data?.refresh) {
+        toast.error("Credenciales inválidas");
+        return;
+      }
+
+      login(data.access, data.refresh);
+      toast.success(`Bienvenido/a, ${form.username} 👋`);
+      navigate("/");
+    } catch (error) {
+      handleErrors(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // =====================
+  // LOGIN GOOGLE
+  // =====================
+  const handleGoogleSuccess = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      return toast.error("Error con Google");
     }
 
     try {
-      await agregarAlCarrito(
-        producto.id,
-        varianteSeleccionada?.id || null,
-        1
+      const res = await fetch(
+        "https://backvariantes.onrender.com/api/google-login/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: credentialResponse.credential,
+          }),
+        }
       );
 
-      toast.success("Producto agregado ✅");
-      onClose();
-    } catch (e) {
-      toast.error(e.message || "Error al agregar");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Error con Google");
+      }
+
+      login(data.access, data.refresh);
+      toast.success("Bienvenido con Google");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al iniciar con Google");
     }
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      sx={detalleModalStyles.dialog}
-      PaperProps={{ sx: detalleModalStyles.dialogPaper }}
-    >
-      <IconButton onClick={onClose} sx={detalleModalStyles.botonCerrar}>
-        <CloseIcon />
-      </IconButton>
-
-      <Stack spacing={3} alignItems="center">
-        {/* IMAGEN */}
-        <Box
-          sx={detalleModalStyles.sliderBox}
-          onClick={() => setLightbox && setLightbox(imagenSegura)}
+    <Container maxWidth="xs" sx={loginStyles.container(theme)}>
+      <Paper elevation={8} sx={loginStyles.paper(theme)}>
+        <Typography
+          variant="h4"
+          align="center"
+          fontWeight="bold"
+          gutterBottom
+          sx={loginStyles.titulo(theme)}
         >
-          <Box
-            component="img"
-            src={imagenSegura}
-            alt={producto.nombre}
-            sx={detalleModalStyles.imagen}
+          Bienvenido
+        </Typography>
+
+        <Typography
+          variant="body1"
+          align="center"
+          color="text.secondary"
+          sx={loginStyles.subtitulo}
+        >
+          Ingresa tus credenciales para continuar
+        </Typography>
+
+        <form onSubmit={handleSubmit}>
+          {/* Usuario */}
+          <TextField
+            name="username"
+            label="Usuario"
+            fullWidth
+            margin="normal"
+            value={form.username}
+            onChange={handleChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <PersonOutline color="action" />
+                </InputAdornment>
+              ),
+            }}
           />
-        </Box>
 
-        {/* 💰 PRECIO */}
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <AttachMoneyIcon color="success" />
-          <Typography variant="h5" fontWeight="bold" color="success.main">
-            {precioActual}
-          </Typography>
-        </Stack>
+          {/* Contraseña */}
+          <TextField
+            name="password"
+            label="Contraseña"
+            type={showPassword ? "text" : "password"}
+            fullWidth
+            margin="normal"
+            value={form.password}
+            onChange={handleChange}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockOutlined color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={togglePasswordVisibility}>
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-        {/* MINIATURAS */}
-        {imagenes.length > 1 && (
-          <Stack direction="row" spacing={1}>
-            {imagenes.map((img, i) => (
-              <Box
-                key={i}
-                component="img"
-                src={img}
-                onClick={() => setImagenActiva(img)}
-                sx={(theme) => ({
-                  width: 55,
-                  height: 55,
-                  objectFit: "cover",
-                  borderRadius: 1,
-                  cursor: "pointer",
-                  border:
-                    imagenSegura === img
-                      ? `2px solid ${theme.palette.primary.main}`
-                      : `1px solid ${theme.palette.divider}`,
-                })}
-              />
-            ))}
-          </Stack>
-        )}
-
-        {/* INFO */}
-        <Box textAlign="center">
-          <Typography variant="h5" fontWeight="bold">
-            {producto.nombre}
-          </Typography>
-
-          <Typography sx={{ mt: 1 }}>
-            {producto.descripcion}
-          </Typography>
-        </Box>
-
-        {/* 🔥 VARIANTES */}
-        {tieneVariantes && modo === "compra" && (
-          <Stack spacing={2} alignItems="center">
-            <Typography fontWeight="bold">
-              Selecciona una opción:
-            </Typography>
-
-            {!tieneStockVariantes && (
-              <Chip label="Sin stock" color="error" />
-            )}
-
-            <Stack
-              direction="row"
-              flexWrap="wrap"
-              gap={1.5}
-              justifyContent="center"
-            >
-              {producto.variantes.map((v) => {
-                const isSelected = varianteSeleccionada?.id === v.id;
-
-                const label = [...new Set(
-                  [v.talla, v.color, v.modelo, v.capacidad]
-                    .filter(Boolean)
-                    .map((x) => x.trim())
-                )].join(" - ");
-
-                return (
-                  <Button
-                    key={v.id}
-                    onClick={() => setVarianteSeleccionada(v)}
-                    disabled={v.stock === 0}
-                    sx={{
-                      px: 2.5,
-                      py: 1,
-                      borderRadius: "999px",
-                      textTransform: "none",
-                      fontWeight: 500,
-                      border: "1px solid #ddd",
-                      backgroundColor: isSelected ? "#111" : "#fff",
-                      color: isSelected ? "#fff" : "#333",
-                      opacity: v.stock === 0 ? 0.4 : 1,
-                    }}
-                  >
-                    {label || "Única"}
-                  </Button>
-                );
-              })}
-            </Stack>
-
-            {varianteSeleccionada && (
-              <Chip
-                label={`Stock: ${varianteSeleccionada.stock}`}
-                color={
-                  varianteSeleccionada.stock > 0
-                    ? "success"
-                    : "default"
-                }
-              />
-            )}
-          </Stack>
-        )}
-
-        {/* 🔥 BOTÓN FINAL */}
-        <Box
-          sx={{
-            width: "100%",
-            mt: 2,
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          {modo === "info" ? (
+          {/* BOTONES */}
+          <Box mt={3} display="flex" flexDirection="column" gap={2}>
             <Button
+              type="submit"
               variant="contained"
               fullWidth
-              onClick={() => setModo("compra")}
-              sx={{
-                maxWidth: 400,
-                width: "100%",
-                backgroundColor: "#2196f3",
-              }}
+              disabled={loading}
+              sx={loginStyles.botonLogin(theme)}
             >
-              Seleccionar opciones
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Iniciar sesión"
+              )}
             </Button>
-          ) : (
+
             <Button
-              variant="contained"
-              startIcon={<AddShoppingCartIcon />}
-              onClick={handleAgregar}
-              sx={{
-                ...botonAgregarSx(stockTotal),
-                maxWidth: 400,
-                width: "100%",
-              }}
-              disabled={
-                tieneVariantes
-                  ? !varianteSeleccionada ||
-                    varianteSeleccionada.stock === 0
-                  : stockTotal === 0
-              }
+              variant="outlined"
+              fullWidth
+              onClick={() => navigate("/register")}
+              sx={loginStyles.botonRegister(theme)}
             >
-              {tieneVariantes
-                ? varianteSeleccionada
-                  ? varianteSeleccionada.stock > 0
-                    ? "Agregar al carrito"
-                    : "Agotado"
-                  : "Seleccionar opciones"
-                : stockTotal > 0
-                ? "Agregar al carrito"
-                : "Agotado"}
+              Registrarse
             </Button>
-          )}
+          </Box>
+        </form>
+
+        {/* DIVIDER */}
+        <Box mt={3} textAlign="center">
+          <Typography variant="body2" color="text.secondary">
+            o continuar con
+          </Typography>
         </Box>
-      </Stack>
-    </Dialog>
+
+        {/* GOOGLE LOGIN */}
+        <Box mt={2} display="flex" justifyContent="center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => toast.error("Error con Google")}
+          />
+        </Box>
+      </Paper>
+    </Container>
   );
 }
