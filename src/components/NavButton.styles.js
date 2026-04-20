@@ -1,4 +1,3 @@
-// NavButton.styles.js
 const navButtonStyles = (theme, isActive, item, alwaysColoredPaths) => ({
   fontSize: "1.05rem",
   fontWeight: 600,
@@ -8,32 +7,36 @@ const navButtonStyles = (theme, isActive, item, alwaysColoredPaths) => ({
   width: "100%",
   py: 1.2,
   transition: "all 0.25s ease",
+
   "& .MuiButton-startIcon": { color: "#fff" },
 
   // Fondo dinámico
-  background: {
-    xs: item.color, // móvil siempre con color
+  backgroundColor: {
+    xs: item.color,
     md:
       isActive || alwaysColoredPaths.includes(item.path)
         ? item.color
         : "transparent",
   },
 
-  // Sombras y efecto activo
+  // Estado activo
   boxShadow: isActive ? "0 0 20px rgba(255,255,255,0.5)" : "none",
   transform: isActive ? "scale(1.04)" : "scale(1)",
 
+  // 🔥 HOVER CORREGIDO (mata el azul de MUI)
   "&:hover": {
+    backgroundColor: `${item.color} !important`,
     boxShadow: isActive
       ? "0 0 20px rgba(0,0,0,0.4)"
       : "0 0 12px rgba(0,0,0,0.25)",
     filter: "brightness(1.1)",
   },
 
-  // Ajuste dark mode
+  // Dark mode
   ...(theme.palette.mode === "dark" && {
     color: "#fff",
     "&:hover": {
+      backgroundColor: `${item.color} !important`,
       filter: "brightness(1.2)",
     },
   }),
