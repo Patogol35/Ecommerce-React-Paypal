@@ -13,7 +13,6 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { useState, useEffect, useMemo } from "react";
 import { useCarrito } from "../context/CarritoContext";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom"; // 🔥 FIX
 import { toast } from "react-toastify";
 import detalleModalStyles from "./DetalleModal.styles";
 import { botonAgregarSx } from "../components/ProductoCard.styles";
@@ -24,12 +23,10 @@ export default function DetalleModal({
   onClose,
   setLightbox,
   modo = "compra",
-  setModo,
+  setModo, // 🔥 IMPORTANTE
 }) {
   const { agregarAlCarrito } = useCarrito();
   const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation(); // 🔥 FIX
 
   if (!producto) return null;
 
@@ -59,7 +56,7 @@ export default function DetalleModal({
     );
   }, [producto]);
 
-  // RESET
+  // 🔥 RESET SOLO CUANDO ABRE EN COMPRA
   useEffect(() => {
     if (open && modo === "compra") {
       setVarianteSeleccionada(null);
@@ -86,14 +83,8 @@ export default function DetalleModal({
 
   // 🛒 AGREGAR
   const handleAgregar = async () => {
-    // 🔥 FIX: REDIRECCIÓN SEGURA
     if (!isAuthenticated) {
-      toast.error("Debes iniciar sesión para agregar productos");
-
-      navigate("/login", {
-        state: { from: location.pathname }, // ✅ CLAVE
-      });
-
+      toast.error("Debes iniciar sesión para agregar productos al carrito");
       return;
     }
 
@@ -143,7 +134,7 @@ export default function DetalleModal({
           />
         </Box>
 
-        {/* PRECIO */}
+        {/* 💰 PRECIO */}
         <Stack direction="row" alignItems="center" spacing={1}>
           <AttachMoneyIcon color="success" />
           <Typography variant="h5" fontWeight="bold" color="success.main">
@@ -181,12 +172,13 @@ export default function DetalleModal({
           <Typography variant="h5" fontWeight="bold">
             {producto.nombre}
           </Typography>
+
           <Typography sx={{ mt: 1 }}>
             {producto.descripcion}
           </Typography>
         </Box>
 
-        {/* VARIANTES */}
+        {/* 🔥 VARIANTES SOLO EN COMPRA */}
         {tieneVariantes && modo === "compra" && (
           <Stack spacing={2} alignItems="center">
             <Typography fontWeight="bold">
@@ -197,7 +189,12 @@ export default function DetalleModal({
               <Chip label="Sin stock" color="error" />
             )}
 
-            <Stack direction="row" flexWrap="wrap" gap={1.5}>
+            <Stack
+              direction="row"
+              flexWrap="wrap"
+              gap={1.5}
+              justifyContent="center"
+            >
               {producto.variantes.map((v) => {
                 const isSelected = varianteSeleccionada?.id === v.id;
 
@@ -213,9 +210,15 @@ export default function DetalleModal({
                     onClick={() => setVarianteSeleccionada(v)}
                     disabled={v.stock === 0}
                     sx={{
+                      px: 2.5,
+                      py: 1,
                       borderRadius: "999px",
+                      textTransform: "none",
+                      fontWeight: 500,
+                      border: "1px solid #ddd",
                       backgroundColor: isSelected ? "#111" : "#fff",
                       color: isSelected ? "#fff" : "#333",
+                      opacity: v.stock === 0 ? 0.4 : 1,
                     }}
                   >
                     {label || "Única"}
@@ -223,25 +226,72 @@ export default function DetalleModal({
                 );
               })}
             </Stack>
+
+            {varianteSeleccionada && (
+              <Chip
+                label={`Stock: ${varianteSeleccionada.stock}`}
+                color={
+                  varianteSeleccionada.stock > 0
+                    ? "success"
+                    : "default"
+                }
+              />
+            )}
           </Stack>
         )}
 
-        {/* BOTÓN */}
-        <Box sx={{ width: "100%", mt: 2, display: "flex", justifyContent: "center" }}>
-          <Button
-            variant="contained"
-            startIcon={<AddShoppingCartIcon />}
-            onClick={handleAgregar}
-            sx={{
-              ...botonAgregarSx(stockTotal),
-              maxWidth: 400,
-              width: "100%",
-            }}
-          >
-            Agregar al carrito
-          </Button>
+        {/* 🔥 BOTÓN FINAL */}
+        <Box
+          sx={{
+            width: "100%",
+            mt: 2,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          {modo === "info" ? (
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => setModo("compra")} // 🔥 CAMBIO REAL
+              sx={{
+                maxWidth: 400,
+                width: "100%",
+                backgroundColor: "#2196f3",
+              }}
+            >
+              Seleccionar opciones
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              startIcon={<AddShoppingCartIcon />}
+              onClick={handleAgregar}
+              sx={{
+                ...botonAgregarSx(stockTotal),
+                maxWidth: 400,
+                width: "100%",
+              }}
+              disabled={
+                tieneVariantes
+                  ? !varianteSeleccionada ||
+                    varianteSeleccionada.stock === 0
+                  : stockTotal === 0
+              }
+            >
+              {tieneVariantes
+                ? varianteSeleccionada
+                  ? varianteSeleccionada.stock > 0
+                    ? "Agregar al carrito"
+                    : "Agotado"
+                  : "Seleccionar opciones"
+                : stockTotal > 0
+                ? "Agregar al carrito"
+                : "Agotado"}
+            </Button>
+          )}
         </Box>
       </Stack>
     </Dialog>
   );
-                }
+          }
