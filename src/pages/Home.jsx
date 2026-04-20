@@ -166,12 +166,13 @@ export default function Home() {
 
       {/* 🔥 MODAL CON MODO */}
       <DetalleModal
-        producto={productoSeleccionado}
-        open={Boolean(productoSeleccionado)}
-        onClose={handleCerrarDetalle}
-        modo={modoModal} // 🔥 AQUÍ ESTÁ LA MAGIA
-        setLightbox={setLightbox}
-      />
+  producto={productoSeleccionado}
+  open={Boolean(productoSeleccionado)}
+  onClose={handleCerrarDetalle}
+  modo={modoModal}
+  setModo={setModoModal}
+  setLightbox={setLightbox}
+/>
 
       {/* LIGHTBOX */}
       <LightboxModal
