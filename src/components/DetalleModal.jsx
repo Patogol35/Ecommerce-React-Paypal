@@ -22,8 +22,7 @@ export default function DetalleModal({
   open,
   onClose,
   setLightbox,
-  modo = "compra",
-  setModo, // 🔥 IMPORTANTE
+  modo = "compra", // 🔥 NUEVO
 }) {
   const { agregarAlCarrito } = useCarrito();
   const { isAuthenticated } = useAuth();
@@ -56,7 +55,7 @@ export default function DetalleModal({
     );
   }, [producto]);
 
-  // 🔥 RESET SOLO CUANDO ABRE EN COMPRA
+  // 🔥 RESET SOLO EN MODO COMPRA
   useEffect(() => {
     if (open && modo === "compra") {
       setVarianteSeleccionada(null);
@@ -83,6 +82,12 @@ export default function DetalleModal({
 
   // 🛒 AGREGAR
   const handleAgregar = async () => {
+    // 🔵 modo info bloquea compra
+    if (modo === "info") {
+      toast.info("Este modo es solo informativo 👀");
+      return;
+    }
+
     if (!isAuthenticated) {
       toast.warn("Debes iniciar sesión");
       return;
@@ -137,7 +142,11 @@ export default function DetalleModal({
         {/* 💰 PRECIO */}
         <Stack direction="row" alignItems="center" spacing={1}>
           <AttachMoneyIcon color="success" />
-          <Typography variant="h5" fontWeight="bold" color="success.main">
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            color="success.main"
+          >
             {precioActual}
           </Typography>
         </Stack>
@@ -178,7 +187,7 @@ export default function DetalleModal({
           </Typography>
         </Box>
 
-        {/* 🔥 VARIANTES SOLO EN COMPRA */}
+        {/* 🔥 VARIANTES SOLO EN MODO COMPRA */}
         {tieneVariantes && modo === "compra" && (
           <Stack spacing={2} alignItems="center">
             <Typography fontWeight="bold">
@@ -240,58 +249,63 @@ export default function DetalleModal({
           </Stack>
         )}
 
-        {/* 🔥 BOTÓN FINAL */}
+        {/* BOTÓN */}
         <Box
-          sx={{
-            width: "100%",
-            mt: 2,
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          {modo === "info" ? (
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => setModo("compra")} // 🔥 CAMBIO REAL
-              sx={{
-                maxWidth: 400,
-                width: "100%",
-                backgroundColor: "#2196f3",
-              }}
-            >
-              Seleccionar opciones
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              startIcon={<AddShoppingCartIcon />}
-              onClick={handleAgregar}
-              sx={{
-                ...botonAgregarSx(stockTotal),
-                maxWidth: 400,
-                width: "100%",
-              }}
-              disabled={
-                tieneVariantes
-                  ? !varianteSeleccionada ||
-                    varianteSeleccionada.stock === 0
-                  : stockTotal === 0
-              }
-            >
-              {tieneVariantes
-                ? varianteSeleccionada
-                  ? varianteSeleccionada.stock > 0
-                    ? "Agregar al carrito"
-                    : "Agotado"
-                  : "Seleccionar opciones"
-                : stockTotal > 0
-                ? "Agregar al carrito"
-                : "Agotado"}
-            </Button>
-          )}
-        </Box>
+  sx={{
+    width: "100%",
+    mt: 2,
+    display: "flex",
+    justifyContent: "center",
+  }}
+>
+  {modo === "info" ? (
+    // 🔵 MODO INFO
+    <Button
+      variant="contained"
+      fullWidth
+      onClick={() => {
+        // 👇 cambiar a modo compra SIN cerrar modal
+        setVarianteSeleccionada(null);
+      }}
+      sx={{
+        maxWidth: 400,
+        width: "100%",
+        backgroundColor: "#2196f3",
+      }}
+    >
+      Seleccionar opciones
+    </Button>
+  ) : (
+    // 🟢 MODO COMPRA
+    <Button
+      variant="contained"
+      startIcon={<AddShoppingCartIcon />}
+      onClick={handleAgregar}
+      sx={{
+        ...botonAgregarSx(stockTotal),
+        maxWidth: 400,
+        width: "100%",
+      }}
+      disabled={
+        tieneVariantes
+          ? !varianteSeleccionada ||
+            varianteSeleccionada.stock === 0
+          : stockTotal === 0
+      }
+    >
+      {tieneVariantes
+        ? varianteSeleccionada
+          ? varianteSeleccionada.stock > 0
+            ? "Agregar al carrito"
+            : "Agotado"
+          : "Seleccionar opciones"
+        : stockTotal > 0
+        ? "Agregar al carrito"
+        : "Agotado"}
+    </Button>
+  )}
+</Box>
       </Stack>
     </Dialog>
   );
-}
+          }
