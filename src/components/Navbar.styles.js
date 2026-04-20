@@ -86,12 +86,18 @@ logoutBtn: (theme) => ({
   "& .MuiButton-startIcon": { color: "#fff" },
 
   "&:hover": {
+    background: {
+      md: "#d32f2f", // 🔥 AQUÍ ESTÁ LA CLAVE
+    },
     boxShadow: "0 0 12px rgba(0,0,0,0.25)",
     filter: "brightness(1.1)",
   },
 
   ...(theme.palette.mode === "dark" && {
     "&:hover": {
+      background: {
+        md: "#d32f2f", // aseguras también en dark
+      },
       filter: "brightness(1.2)",
     },
   }),
