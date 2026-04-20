@@ -13,6 +13,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { useState, useEffect, useMemo } from "react";
 import { useCarrito } from "../context/CarritoContext";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom"; // ✅ FIX
 import { toast } from "react-toastify";
 import detalleModalStyles from "./DetalleModal.styles";
 import { botonAgregarSx } from "../components/ProductoCard.styles";
@@ -23,10 +24,11 @@ export default function DetalleModal({
   onClose,
   setLightbox,
   modo = "compra",
-  setModo, // 🔥 IMPORTANTE
+  setModo,
 }) {
   const { agregarAlCarrito } = useCarrito();
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate(); // ✅ FIX
 
   if (!producto) return null;
 
@@ -83,8 +85,17 @@ export default function DetalleModal({
 
   // 🛒 AGREGAR
   const handleAgregar = async () => {
+    // 🔒 LOGIN FIX (SIN ROMPER)
     if (!isAuthenticated) {
       toast.error("Debes iniciar sesión para agregar productos al carrito");
+
+      // 🔥 CLAVE: cerrar modal antes de navegar
+      onClose && onClose();
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 100);
+
       return;
     }
 
@@ -178,7 +189,7 @@ export default function DetalleModal({
           </Typography>
         </Box>
 
-        {/* 🔥 VARIANTES SOLO EN COMPRA */}
+        {/* VARIANTES */}
         {tieneVariantes && modo === "compra" && (
           <Stack spacing={2} alignItems="center">
             <Typography fontWeight="bold">
@@ -189,12 +200,7 @@ export default function DetalleModal({
               <Chip label="Sin stock" color="error" />
             )}
 
-            <Stack
-              direction="row"
-              flexWrap="wrap"
-              gap={1.5}
-              justifyContent="center"
-            >
+            <Stack direction="row" flexWrap="wrap" gap={1.5} justifyContent="center">
               {producto.variantes.map((v) => {
                 const isSelected = varianteSeleccionada?.id === v.id;
 
@@ -240,20 +246,13 @@ export default function DetalleModal({
           </Stack>
         )}
 
-        {/* 🔥 BOTÓN FINAL */}
-        <Box
-          sx={{
-            width: "100%",
-            mt: 2,
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
+        {/* BOTÓN */}
+        <Box sx={{ width: "100%", mt: 2, display: "flex", justifyContent: "center" }}>
           {modo === "info" ? (
             <Button
               variant="contained"
               fullWidth
-              onClick={() => setModo("compra")} // 🔥 CAMBIO REAL
+              onClick={() => setModo && setModo("compra")} // 🔥 FIX seguro
               sx={{
                 maxWidth: 400,
                 width: "100%",
@@ -294,4 +293,4 @@ export default function DetalleModal({
       </Stack>
     </Dialog>
   );
-}
+          }
