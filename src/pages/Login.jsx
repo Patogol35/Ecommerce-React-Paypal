@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { login as apiLogin } from "../api/api";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import {
@@ -37,14 +37,7 @@ const validators = {
 export default function Login() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
   const { login } = useAuth();
-
-  // 🔥 VALIDACIÓN SEGURA DE FROM (ANTI CRASH)
-  const from =
-    typeof location.state?.from === "string"
-      ? location.state.from
-      : "/";
 
   const [form, setForm] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -94,15 +87,6 @@ export default function Login() {
     toast.error(message);
   }, []);
 
-  // 🔥 FUNCIÓN SEGURA DE REDIRECCIÓN
-  const safeNavigate = () => {
-    if (!from || from === "/login") {
-      navigate("/", { replace: true });
-    } else {
-      navigate(from, { replace: true });
-    }
-  };
-
   // =====================
   // LOGIN NORMAL
   // =====================
@@ -122,9 +106,7 @@ export default function Login() {
 
       login(data.access, data.refresh);
       toast.success(`Bienvenido/a, ${form.username} 👋`);
-
-      safeNavigate(); // 🔥 CLAVE
-
+      navigate("/");
     } catch (error) {
       handleErrors(error);
     } finally {
@@ -162,9 +144,7 @@ export default function Login() {
 
       login(data.access, data.refresh);
       toast.success("Bienvenido con Google");
-
-      safeNavigate(); // 🔥 CLAVE
-
+      navigate("/");
     } catch (error) {
       console.error(error);
       toast.error("Error al iniciar con Google");
@@ -194,6 +174,7 @@ export default function Login() {
         </Typography>
 
         <form onSubmit={handleSubmit}>
+          {/* Usuario */}
           <TextField
             name="username"
             label="Usuario"
@@ -210,6 +191,7 @@ export default function Login() {
             }}
           />
 
+          {/* Contraseña */}
           <TextField
             name="password"
             label="Contraseña"
@@ -234,6 +216,7 @@ export default function Login() {
             }}
           />
 
+          {/* BOTONES */}
           <Box mt={3} display="flex" flexDirection="column" gap={2}>
             <Button
               type="submit"
@@ -260,12 +243,14 @@ export default function Login() {
           </Box>
         </form>
 
+        {/* DIVIDER */}
         <Box mt={3} textAlign="center">
           <Typography variant="body2" color="text.secondary">
             o continuar con
           </Typography>
         </Box>
 
+        {/* GOOGLE LOGIN */}
         <Box mt={2} display="flex" justifyContent="center">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
@@ -275,4 +260,4 @@ export default function Login() {
       </Paper>
     </Container>
   );
-}
+            }
