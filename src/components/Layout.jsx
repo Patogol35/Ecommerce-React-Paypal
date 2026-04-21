@@ -1,25 +1,35 @@
-import { Box, Container, IconButton } from "@mui/material";
+import { Box, Container, IconButton, Badge } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Outlet, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useCarrito } from "../context/CarritoContext";
 
 export default function Layout() {
   const theme = useTheme();
   const navigate = useNavigate();
 
+  // 🛒 CONTEXTO DEL CARRITO
+  const { carrito } = useCarrito();
+
+  // 🔢 TOTAL DE PRODUCTOS
+  const totalItems =
+    carrito?.reduce((acc, item) => acc + item.cantidad, 0) || 0;
+
   return (
     <Box
-      sx={(theme) => ({
+      sx={{
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         backgroundColor: theme.palette.background.default,
         transition: "background-color 0.3s ease",
-      })}
+      }}
     >
+      {/* NAVBAR */}
       <Navbar />
 
+      {/* CONTENIDO */}
       <Container
         maxWidth="lg"
         sx={{
@@ -31,6 +41,7 @@ export default function Layout() {
         <Outlet />
       </Container>
 
+      {/* 🛒 BOTÓN FLOTANTE CON CONTADOR */}
       <IconButton
         onClick={() => navigate("/carrito")}
         sx={{
@@ -54,12 +65,15 @@ export default function Layout() {
           },
         }}
       >
-        <ShoppingCartIcon />
+        <Badge badgeContent={totalItems} color="error">
+          <ShoppingCartIcon />
+        </Badge>
       </IconButton>
 
+      {/* FOOTER */}
       <Box
         component="footer"
-        sx={(theme) => ({
+        sx={{
           textAlign: "center",
           py: 3,
           mt: "auto",
@@ -67,7 +81,7 @@ export default function Layout() {
           borderTop: `1px solid ${theme.palette.divider}`,
           backgroundColor: theme.palette.background.paper,
           transition: "background-color 0.3s ease",
-        })}
+        }}
       >
         © 2026 · E-commerce Jorge Patricio
       </Box>
