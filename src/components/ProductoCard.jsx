@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import InfoIcon from "@mui/icons-material/Info";
+import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import StarIcon from "@mui/icons-material/Star";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 
@@ -189,16 +190,16 @@ export default function ProductoCard({ producto, onAgregar }) {
           <Button
   variant="contained"
   fullWidth
-  startIcon={<InfoIcon />}
+  startIcon={<ShoppingCartCheckoutIcon />}
   sx={botonAgregarSx(stockTotal)}
   onClick={() =>
     navigate(`/producto/${producto.id}`, {
-      state: { producto }, 
+      state: { producto },
     })
   }
   disabled={stockTotal === 0}
 >
-  {stockTotal > 0 ? "Ver producto" : "Agotado"}
+  {stockTotal > 0 ? "Ver opciones" : "Agotado"}
 </Button>
           {/* 🔵 BOTÓN DETALLES */}
           {/*
