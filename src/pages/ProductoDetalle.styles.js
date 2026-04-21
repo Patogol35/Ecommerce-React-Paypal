@@ -167,8 +167,6 @@ export const variantesContainerSx = {
 export const varianteBtnSx = (isSelected, stock, theme) => {
   const isDark = theme.palette.mode === "dark";
 
-  const borderBase = isDark ? "#fff" : "#000";
-
   return {
     borderRadius: "999px",
     textTransform: "none",
@@ -178,20 +176,17 @@ export const varianteBtnSx = (isSelected, stock, theme) => {
     py: 0.7,
 
     border: "1px solid",
+    borderColor: isSelected ? "#000" : "#90caf9",
 
-    // 🔥 SIEMPRE blanco/negro
-    borderColor: borderBase,
-
-    // 🔥 seleccionado invierte colores
+    // 🔥 fondo celeste por defecto
     backgroundColor: isSelected
-      ? borderBase
-      : "transparent",
+      ? "#000"
+      : isDark
+      ? "rgba(144,202,249,0.15)"
+      : "#e3f2fd",
 
-    color: isSelected
-      ? isDark
-        ? "#000"
-        : "#fff"
-      : theme.palette.text.primary,
+    // 🔥 texto
+    color: isSelected ? "#fff" : theme.palette.text.primary,
 
     opacity: stock === 0 ? 0.4 : 1,
 
@@ -199,12 +194,11 @@ export const varianteBtnSx = (isSelected, stock, theme) => {
 
     "&:hover": {
       transform: stock > 0 ? "scale(1.05)" : "none",
-      backgroundColor:
-        stock > 0 && !isSelected
-          ? isDark
-            ? "rgba(255,255,255,0.1)"
-            : "rgba(0,0,0,0.05)"
-          : undefined,
+      backgroundColor: isSelected
+        ? "#000"
+        : isDark
+        ? "rgba(144,202,249,0.3)"
+        : "#bbdefb",
     },
   };
 };
