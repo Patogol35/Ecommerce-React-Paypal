@@ -8,8 +8,8 @@ export const containerSx = {
 
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",     // 🔥 centra horizontal
-  textAlign: "center",      // 🔥 centra textos
+  alignItems: "center",
+  textAlign: "center",
   gap: 4,
 };
 
@@ -18,7 +18,7 @@ export const containerSx = {
 // BOTÓN VOLVER
 // ================================
 export const botonVolverSx = (theme) => ({
-  alignSelf: "center",      // 🔥 centrado
+  alignSelf: "center",
 
   borderRadius: "999px",
   textTransform: "none",
@@ -54,11 +54,11 @@ export const imagenContainerSx = (theme) => ({
   justifyContent: "center",
   alignItems: "center",
 
-  border: "1px solid",   // 🔥 borde visible pero elegante
+  border: "2px solid",
   borderColor:
     theme.palette.mode === "dark"
-      ? "#fff"   // 🌙 blanco en oscuro
-      : "#000",  // 🌞 negro en claro
+      ? "#fff"
+      : "#000",
 
   boxShadow:
     theme.palette.mode === "dark"
@@ -70,7 +70,7 @@ export const imagenContainerSx = (theme) => ({
   transition: "all 0.3s ease",
 
   "&:hover": {
-    borderColor: theme.palette.primary.main, // 🔥 resalta al hover
+    transform: "scale(1.01)",
   },
 
   "&:hover img": {
@@ -95,12 +95,13 @@ export const imagenSlideSx = {
 // IMAGEN
 // ================================
 export const imagenSx = {
-  maxWidth: "80%",     // 🔥 más pequeña
-  maxHeight: 420,      // 🔥 reduce altura
+  maxWidth: "80%",
+  maxHeight: 420,
   objectFit: "contain",
   borderRadius: 3,
   transition: "transform 0.5s ease",
 };
+
 
 // ================================
 // TÍTULO
@@ -108,7 +109,6 @@ export const imagenSx = {
 export const tituloSx = {
   fontWeight: 700,
   fontSize: { xs: "1.5rem", md: "2rem" },
-  textAlign: "center",
 };
 
 
@@ -118,7 +118,6 @@ export const tituloSx = {
 export const precioSx = (theme) => ({
   fontWeight: 800,
   fontSize: "2rem",
-  textAlign: "center",
 
   color:
     theme.palette.mode === "dark"
@@ -131,7 +130,7 @@ export const precioSx = (theme) => ({
 // STOCK
 // ================================
 export const stockSx = (stock) => ({
-  alignSelf: "center",   // 🔥 centrado total
+  alignSelf: "center",
 
   px: 1.8,
   py: 0.5,
@@ -159,7 +158,7 @@ export const stockSx = (stock) => ({
 // ================================
 export const variantesContainerSx = {
   display: "flex",
-  justifyContent: "center",   // 🔥 centra horizontal
+  justifyContent: "center",
   flexWrap: "wrap",
   gap: 1,
 };
@@ -172,32 +171,49 @@ export const varianteBtnSx = (isSelected, stock, theme) => ({
   px: 2,
   py: 0.7,
 
-  border: "1px solid",   // 🔥 más grueso
+  border: "2px solid",
 
   borderColor: isSelected
     ? theme.palette.mode === "dark"
-      ? "#fff"   // seleccionado en dark
-      : "#000"   // seleccionado en light
+      ? "#fff"
+      : "#000"
     : theme.palette.mode === "dark"
-      ? "#ffffff55" // no seleccionado dark
-      : "#00000040", // no seleccionado light
+      ? "#ffffff55"
+      : "#00000040",
 
   backgroundColor: isSelected
-    ? theme.palette.primary.main
-    : theme.palette.background.paper,
+    ? theme.palette.mode === "dark"
+      ? "#fff"
+      : "#000"
+    : "transparent",
 
-  color: isSelected ? "#fff" : theme.palette.text.primary,
+  color: isSelected
+    ? theme.palette.mode === "dark"
+      ? "#000"
+      : "#fff"
+    : theme.palette.text.primary,
 
   opacity: stock === 0 ? 0.4 : 1,
 
   transition: "all 0.25s ease",
 
+  boxShadow: isSelected
+    ? theme.palette.mode === "dark"
+      ? "0 0 0 2px rgba(255,255,255,0.2)"
+      : "0 0 0 2px rgba(0,0,0,0.1)"
+    : "none",
+
   "&:hover": {
     borderColor:
-      stock > 0 ? theme.palette.primary.main : undefined,
+      stock > 0
+        ? theme.palette.mode === "dark"
+          ? "#fff"
+          : "#000"
+        : undefined,
     transform: stock > 0 ? "scale(1.05)" : "none",
   },
 });
+
 
 // ================================
 // DESCRIPCIÓN
@@ -206,7 +222,6 @@ export const descripcionSx = {
   color: "text.secondary",
   lineHeight: 1.7,
   fontSize: "0.95rem",
-  textAlign: "center",
 };
 
 
@@ -214,7 +229,7 @@ export const descripcionSx = {
 // BOTÓN AGREGAR
 // ================================
 export const botonAgregarSx = (stock) => ({
-  alignSelf: "center",   // 🔥 centrado total
+  alignSelf: "center",
 
   borderRadius: "999px",
   px: 3,
