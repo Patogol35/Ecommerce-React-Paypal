@@ -11,7 +11,6 @@ export const containerSx = {
   gap: 3,
 };
 
-
 // ================================
 // BOTÓN VOLVER
 // ================================
@@ -39,7 +38,6 @@ export const botonVolverSx = (theme) => ({
   },
 });
 
-
 // ================================
 // CONTENEDOR IMÁGENES (CENTRADO REAL)
 // ================================
@@ -48,9 +46,9 @@ export const imagenContainerSx = (theme) => ({
   borderRadius: 4,
   p: 2,
 
-  display: "flex",              // 🔥 clave
-  justifyContent: "center",     // 🔥 centra horizontal
-  alignItems: "center",         // 🔥 centra vertical
+  display: "flex", // 🔥 clave
+  justifyContent: "center", // 🔥 centra horizontal
+  alignItems: "center", // 🔥 centra vertical
 
   border: "1px solid",
   borderColor: theme.palette.divider,
@@ -70,7 +68,6 @@ export const imagenContainerSx = (theme) => ({
   },
 });
 
-
 // ================================
 // IMAGEN SLIDER
 // ================================
@@ -80,7 +77,6 @@ export const imagenSlideSx = {
   alignItems: "center",
   height: { xs: 300, md: 500 },
 };
-
 
 // ================================
 // IMAGEN (CENTRADA)
@@ -102,7 +98,6 @@ export const imagenSx = {
   },
 };
 
-
 // ================================
 // TÍTULO
 // ================================
@@ -110,7 +105,6 @@ export const tituloSx = {
   fontWeight: 700,
   fontSize: { xs: "1.4rem", md: "1.8rem" },
 };
-
 
 // ================================
 // PRECIO
@@ -126,7 +120,6 @@ export const precioSx = (theme) => ({
 
   letterSpacing: 0.5,
 });
-
 
 // ================================
 // STOCK (TIPO BADGE 🔥)
@@ -144,8 +137,12 @@ export const stockSx = (stock) => ({
 
   backgroundColor: stock > 0 ? "#e8f5e9" : "#ffebee",
   color: stock > 0 ? "#2e7d32" : "#c62828",
-});
 
+  // Para hacer el badge más pequeño
+  height: "auto",
+  fontSize: "0.8rem",  // tamaño de fuente más pequeño
+  padding: "0 5px",
+});
 
 // ================================
 // VARIANTES BOTÓN (NO SE ESTIRA)
@@ -183,7 +180,6 @@ export const varianteBtnSx = (isSelected, stock, theme) => ({
   },
 });
 
-
 // ================================
 // DESCRIPCIÓN
 // ================================
@@ -192,7 +188,6 @@ export const descripcionSx = {
   lineHeight: 1.8,
   fontSize: "0.95rem",
 };
-
 
 // ================================
 // BOTÓN AGREGAR (COMPACTO 🔥)
