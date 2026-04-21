@@ -37,7 +37,6 @@ export const botonVolverSx = (theme) => ({
 
   "&:hover": {
     backgroundColor: theme.palette.action.hover,
-    transform: "scale(1.05)",
   },
 });
 
@@ -67,15 +66,7 @@ export const imagenContainerSx = (theme) => ({
 
   overflow: "hidden",
 
-  transition: "all 0.3s ease",
-
-  //"&:hover": {
-   // transform: "scale(1.01)",
- // },
-
- // "&:hover img": {
-   // transform: "scale(1.08)",
-  // },
+  transition: "box-shadow 0.3s ease",
 });
 
 
@@ -88,18 +79,25 @@ export const imagenSlideSx = {
   alignItems: "center",
   height: { xs: 300, md: 500 },
   cursor: "pointer",
+
+  overflow: "hidden", // 🔥 evita saltos visuales
 };
 
 
 // ================================
-// IMAGEN
+// IMAGEN (CORREGIDA)
 // ================================
 export const imagenSx = {
   maxWidth: "80%",
   maxHeight: 420,
   objectFit: "contain",
   borderRadius: 3,
-  transition: "transform 0.5s ease",
+
+  // 🔥 animación suave SIN zoom feo
+  transition: "opacity 0.3s ease",
+
+  // 🔥 mejora rendimiento
+  willChange: "opacity",
 };
 
 
@@ -165,7 +163,6 @@ export const variantesContainerSx = {
 
 export const varianteBtnSx = (isSelected, stock, theme) => {
   const isDark = theme.palette.mode === "dark";
-
   const borderBase = isDark ? "#fff" : "#000";
 
   return {
@@ -177,11 +174,8 @@ export const varianteBtnSx = (isSelected, stock, theme) => {
     py: 0.7,
 
     border: "1px solid",
-
-    // 🔥 SIEMPRE blanco/negro
     borderColor: borderBase,
 
-    // 🔥 seleccionado invierte colores
     backgroundColor: isSelected
       ? borderBase
       : "transparent",
@@ -207,6 +201,7 @@ export const varianteBtnSx = (isSelected, stock, theme) => {
     },
   };
 };
+
 
 // ================================
 // DESCRIPCIÓN
