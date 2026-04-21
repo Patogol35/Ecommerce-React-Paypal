@@ -187,28 +187,19 @@ export default function ProductoCard({ producto, onAgregar }) {
         <Stack spacing={1}>
           {/* 🟢 BOTÓN PRINCIPAL */}
           <Button
-            variant="contained"
-            fullWidth
-            startIcon={<AddShoppingCartIcon />}
-            sx={botonAgregarSx(stockTotal)}
-            onClick={onAdd}
-            disabled={
-              tieneVariantes
-                ? !tieneStockVariantes
-                : stockTotal === 0
-            }
-          >
-            {tieneVariantes
-              ? tieneStockVariantes
-                ? "Ver opciones"
-                : "Agotado"
-              : stockTotal > 0
-              ? "Agregar al carrito"
-              : "Agotado"}
-          </Button>
+  variant="contained"
+  fullWidth
+  startIcon={<InfoIcon />}
+  sx={botonAgregarSx(stockTotal)}
+  onClick={() => navigate(`/producto/${producto.id}`)}
+  disabled={stockTotal === 0}
+>
+  {stockTotal > 0 ? "Ver opciones" : "Agotado"}
+</Button>
 
           {/* 🔵 BOTÓN DETALLES */}
-          <Button
+          {/*
+<Button
   variant="contained"
   fullWidth
   startIcon={<InfoIcon />}
@@ -221,6 +212,7 @@ export default function ProductoCard({ producto, onAgregar }) {
 >
   Ver detalles
 </Button>
+*/}
         </Stack>
       </Box>
     </Card>
