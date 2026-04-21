@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -16,8 +16,7 @@ import { useCarrito } from "../context/CarritoContext";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
 import Slider from "react-slick";
 
@@ -37,55 +36,76 @@ import {
 } from "./ProductoDetalle.styles";
 
 export default function ProductoDetalle() {
-  const { state } = useLocation();
-  const location = useLocation();
-  const producto = state?.producto;
-  const { agregarAlCarrito } = useCarrito();
-  const { isAuthenticated } = useAuth();
+  const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
 
+  const { agregarAlCarrito } = useCarrito();
+  const { isAuthenticated } = useAuth();
+
+  const [producto, setProducto] = useState(null);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomImage, setZoomImage] = useState("");
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
-useEffect(() => {
-  const handleMenuOpen = () => {
-    setZoomOpen(false);
-  };
+  const [imagenActiva, setImagenActiva] = useState("");
 
-  window.addEventListener("menuOpen", handleMenuOpen);
+  // 🔥 FETCH DEL PRODUCTO
+  useEffect(() => {
+    const fetchProducto = async () => {
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/productos/${id}/`
+        );
+        const data = await res.json();
+        setProducto(data);
+      } catch (error) {
+        console.error("Error cargando producto:", error);
+      }
+    };
 
-  return () => {
-    window.removeEventListener("menuOpen", handleMenuOpen);
-  };
-}, []);
-  
-  if (!producto) return <Typography>Producto no encontrado</Typography>;
+    fetchProducto();
+  }, [id]);
+
+  // 🔥 cerrar zoom si abres menú
+  useEffect(() => {
+    const handleMenuOpen = () => setZoomOpen(false);
+    window.addEventListener("menuOpen", handleMenuOpen);
+    return () => window.removeEventListener("menuOpen", handleMenuOpen);
+  }, []);
+
+  // 🔴 LOADER
+  if (!producto) return <Typography>Cargando...</Typography>;
 
   const tieneVariantes = producto.variantes?.length > 0;
 
+  // 🖼 IMÁGENES
   const imagenes = useMemo(() => {
     if (varianteSeleccionada?.imagenes?.length > 0) {
-      return varianteSeleccionada.imagenes.map((img) => img.imagen);
+      return varianteSeleccionada.imagenes.map((img) =>
+        img.imagen.startsWith("http")
+          ? img.imagen
+          : `http://127.0.0.1:8000${img.imagen}`
+      );
     }
 
     const imgs = [
       producto.imagen,
       ...(producto.imagenes?.map((i) => i.imagen) || []),
-    ].filter(Boolean);
+    ]
+      .filter(Boolean)
+      .map((img) =>
+        img.startsWith("http")
+          ? img
+          : `http://127.0.0.1:8000${img}`
+      );
 
     return [...new Set(imgs)];
   }, [producto, varianteSeleccionada]);
 
-  const [imagenActiva, setImagenActiva] = useState("");
-
   useEffect(() => {
-    if (varianteSeleccionada?.imagenes?.length > 0) {
-      setImagenActiva(varianteSeleccionada.imagenes[0].imagen);
-    } else {
-      setImagenActiva(imagenes[0] || "");
-    }
-  }, [varianteSeleccionada, imagenes]);
+    setImagenActiva(imagenes[0] || "");
+  }, [imagenes]);
 
   const precioActual =
     varianteSeleccionada?.precio ?? producto.precio;
@@ -98,12 +118,13 @@ useEffect(() => {
     );
   }, [producto]);
 
+  // 🛒 AGREGAR
   const handleAdd = async () => {
     if (!isAuthenticated) {
-  toast.info("Inicia sesión para agregar productos al carrito");
-  navigate("/login", { state: { from: location } });
-  return;
-}
+      toast.info("Inicia sesión para agregar productos");
+      navigate("/login", { state: { from: location } });
+      return;
+    }
 
     if (tieneVariantes && !varianteSeleccionada) {
       toast.warning("Selecciona una variante");
@@ -138,7 +159,6 @@ useEffect(() => {
 
   return (
     <Box sx={containerSx}>
-      {/* VOLVER */}
       <Button
         startIcon={<ArrowBackIcon />}
         variant="outlined"
@@ -148,23 +168,13 @@ useEffect(() => {
         Regresar
       </Button>
 
-      {/* 🔥 GRID CENTRADO REAL */}
-      <Grid
-        container
-        spacing={5}
-        justifyContent="center"
-        alignItems="center"
-      >
+      <Grid container spacing={5} justifyContent="center" alignItems="center">
         {/* IMÁGENES */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenContainerSx(theme)}>
             <Slider {...settings}>
               {imagenes.map((img, i) => (
-                <Box
-                  key={i}
-                  onClick={() => handleZoom(img)}
-                  sx={imagenSlideSx}
-                >
+                <Box key={i} onClick={() => handleZoom(img)} sx={imagenSlideSx}>
                   <Box component="img" src={img} sx={imagenSx} />
                 </Box>
               ))}
@@ -174,7 +184,6 @@ useEffect(() => {
 
         {/* DETALLE */}
         <Grid item xs={12} md={6}>
-          {/* 🔥 STACK CENTRADO */}
           <Stack spacing={3} alignItems="center">
             <Typography variant="h4" sx={tituloSx}>
               {producto.nombre}
@@ -190,122 +199,4 @@ useEffect(() => {
                   Selecciona una opción:
                 </Typography>
 
-                <Stack direction="row" sx={variantesContainerSx}>
-                  {producto.variantes.map((v) => {
-                    const isSelected =
-                      varianteSeleccionada?.id === v.id;
-
-                    const label = [...new Set(
-                      [v.talla, v.color, v.modelo, v.capacidad]
-                        .filter(Boolean)
-                        .map((x) => x.trim())
-                    )].join(" - ");
-
-                    return (
-                      <Button
-                        key={v.id}
-                        onClick={() => setVarianteSeleccionada(v)}
-                        disabled={v.stock === 0}
-                        sx={varianteBtnSx(isSelected, v.stock, theme)}
-                      >
-                        {label || "Única"}
-                      </Button>
-                    );
-                  })}
-                </Stack>
-
-                {varianteSeleccionada && (
-                  <Chip
-                    label={`Stock: ${varianteSeleccionada.stock}`}
-                    sx={stockSx(varianteSeleccionada.stock)}
-                  />
-                )}
-              </>
-            )}
-
-            <Divider sx={{ width: "100%" }} />
-
-            <Typography sx={descripcionSx}>
-              {producto.descripcion}
-            </Typography>
-
-            <Button
-              variant="contained"
-              startIcon={<AddShoppingCartIcon />}
-              onClick={handleAdd}
-              disabled={
-                tieneVariantes
-                  ? !varianteSeleccionada ||
-                    varianteSeleccionada.stock === 0
-                  : stockTotal === 0
-              }
-              sx={botonAgregarSx(
-                tieneVariantes
-                  ? varianteSeleccionada?.stock
-                  : stockTotal
-              )}
-            >
-              {tieneVariantes
-                ? varianteSeleccionada
-                  ? varianteSeleccionada.stock > 0
-                    ? "Agregar al carrito"
-                    : "Agotado"
-                  : "Seleccionar opción"
-                : stockTotal > 0
-                ? "Agregar al carrito"
-                : "Agotado"}
-            </Button>
-          </Stack>
-        </Grid>
-      </Grid>
-
-      {/* ZOOM */}
-      <Dialog
-  open={zoomOpen}
-  onClose={() => setZoomOpen(false)}
-  maxWidth="md"
->
-  <Box
-    sx={{
-      position: "relative",
-      bgcolor: theme.palette.background.default, // 🔥 dinámico claro/oscuro
-    }}
-  >
-    {/* BOTÓN X */}
-    <IconButton
-  onClick={() => setZoomOpen(false)}
-  sx={{
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 2,
-
-    bgcolor: "rgba(0,0,0,0.7)", // 🔥 siempre negro
-    color: "#fff",
-
-    "&:hover": {
-      bgcolor: "rgba(0,0,0,0.9)",
-    },
-  }}
->
-  <CloseIcon />
-</IconButton>
-
-    {/* IMAGEN ZOOM */}
-    <Box
-      component="img"
-      src={zoomImage}
-      onClick={() => setZoomOpen(false)} // 👈 opcional (click para cerrar)
-      sx={{
-        maxHeight: "80vh",
-        maxWidth: "100%",
-        display: "block",
-        margin: "0 auto",
-        cursor: "zoom-out",
-      }}
-    />
-  </Box>
-</Dialog>
-    </Box>
-  );
-              }
+                <Stack
