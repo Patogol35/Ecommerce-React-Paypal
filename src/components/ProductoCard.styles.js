@@ -118,7 +118,7 @@ export const tituloSx = {
 // PRECIO
 // ================================
 export const precioStackSx = (theme) => ({
-  mb: 2,
+  mb: 0.8, // 🔥 AQUÍ haces el cambio
   fontSize: "1.3rem",
   fontWeight: 700,
   color:
