@@ -54,7 +54,7 @@ export const imagenContainerSx = (theme) => ({
   justifyContent: "center",
   alignItems: "center",
 
-  border: "1px solid",
+  border: "1px solid",   // 🔥 borde visible pero elegante
   borderColor: theme.palette.divider,
 
   boxShadow:
@@ -65,6 +65,10 @@ export const imagenContainerSx = (theme) => ({
   overflow: "hidden",
 
   transition: "all 0.3s ease",
+
+  "&:hover": {
+    borderColor: theme.palette.primary.main, // 🔥 resalta al hover
+  },
 
   "&:hover img": {
     transform: "scale(1.08)",
@@ -88,7 +92,7 @@ export const imagenSlideSx = {
 // IMAGEN
 // ================================
 export const imagenSx = {
-  maxWidth: "90%",     // 🔥 más pequeña
+  maxWidth: "80%",     // 🔥 más pequeña
   maxHeight: 420,      // 🔥 reduce altura
   objectFit: "contain",
   borderRadius: 3,
@@ -165,7 +169,7 @@ export const varianteBtnSx = (isSelected, stock, theme) => ({
   px: 2,
   py: 0.7,
 
-  border: "2px solid",   // 🔥 más grueso
+  border: "1px solid",   // 🔥 más grueso
 
   borderColor: isSelected
     ? theme.palette.primary.main
