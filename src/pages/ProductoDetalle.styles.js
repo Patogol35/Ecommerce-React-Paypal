@@ -82,13 +82,13 @@ export const imagenContainerSx = (theme) => ({
 // ================================
 // IMAGEN SLIDE
 // ================================
-export const imagenSlideSx = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: { xs: 300, md: 500 },
-  cursor: "pointer",
-};
+//export const imagenSlideSx = {
+//  display: "flex",
+ // justifyContent: "center",
+//  alignItems: "center",
+//  height: { xs: 300, md: 500 },
+//  cursor: "pointer",
+//};
 
 
 // ================================
