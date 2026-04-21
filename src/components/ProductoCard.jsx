@@ -188,7 +188,7 @@ export default function ProductoCard({ producto, onAgregar }) {
   </Box>
 
   {/* 🔹 BOTONES ABAJO */}
-  <Box sx={{ mt: "auto" }}>
+  <Box >
     <Stack spacing={1}>
       <Button
         variant="contained"
