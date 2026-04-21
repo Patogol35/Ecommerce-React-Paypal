@@ -39,6 +39,20 @@ export default function Navbar() {
   const { mode, toggleMode } = useThemeMode();
   const navigate = useNavigate();
 
+
+  const handleToggleMenu = useCallback(() => {
+  setOpen((prev) => {
+    const next = !prev;
+
+    if (next) {
+      window.dispatchEvent(new Event("menuOpen")); // 👈 AQUÍ
+    }
+
+    return next;
+  });
+}, []);
+  
+
   const [open, setOpen] = useState(false);
   const scrolled = useScrollTrigger(50);
 
