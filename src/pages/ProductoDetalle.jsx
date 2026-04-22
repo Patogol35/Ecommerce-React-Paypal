@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -36,22 +36,34 @@ import {
 } from "./ProductoDetalle.styles";
 
 export default function ProductoDetalle() {
-  const { state } = useLocation();
-  const location = useLocation();
-  const producto = state?.producto;
-  const { agregarAlCarrito } = useCarrito();
-  const { isAuthenticated } = useAuth();
+  const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
 
+  const { agregarAlCarrito } = useCarrito();
+  const { isAuthenticated } = useAuth();
+
+  const [producto, setProducto] = useState(null);
+  const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomImage, setZoomImage] = useState("");
-  const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
 
-  // 🔥 DEBUG REAL
+  // 🔥 FETCH REAL
   useEffect(() => {
-    console.log("PRODUCTO:", producto);
-  }, [producto]);
+    const fetchProducto = async () => {
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/productos/${id}/`);
+        const data = await res.json();
+        console.log("PRODUCTO API:", data);
+        setProducto(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProducto();
+  }, [id]);
 
   useEffect(() => {
     const handleMenuOpen = () => setZoomOpen(false);
@@ -59,10 +71,11 @@ export default function ProductoDetalle() {
     return () => window.removeEventListener("menuOpen", handleMenuOpen);
   }, []);
 
-  if (!producto) return <Typography>Producto no encontrado</Typography>;
+  if (!producto) return <Typography>Cargando...</Typography>;
 
   const tieneVariantes = producto.variantes?.length > 0;
 
+  // 🔥 EXTRAER IMÁGENES
   const extraerImagenes = (obj) => {
     if (!obj) return [];
 
@@ -74,10 +87,6 @@ export default function ProductoDetalle() {
 
     if (obj.imagen) {
       imgs.push(obj.imagen);
-    }
-
-    if (typeof obj.imagenes === "string") {
-      imgs.push(obj.imagenes);
     }
 
     return imgs.filter(Boolean);
@@ -157,7 +166,7 @@ export default function ProductoDetalle() {
 
       <Grid container spacing={5} justifyContent="center" alignItems="center">
         
-        {/* IMÁGENES */}
+        {/* 🔥 IMÁGENES */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenContainerSx(theme)}>
             {imagenes.length > 0 ? (
