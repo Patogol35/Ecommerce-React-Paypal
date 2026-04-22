@@ -40,53 +40,69 @@ import {
 
 export default function ProductoDetalle() {
   const { state } = useLocation();
-  const location = useLocation();
-  const producto = state?.producto;
-
-  const { agregarAlCarrito } = useCarrito();
-  const { isAuthenticated } = useAuth();
+  const productoInicial = state?.producto;
 
   const navigate = useNavigate();
   const theme = useTheme();
   const sliderRef = useRef(null);
 
-  const [zoomOpen, setZoomOpen] = useState(false);
-  const [zoomImage, setZoomImage] = useState("");
+  const { agregarAlCarrito } = useCarrito();
+  const { isAuthenticated } = useAuth();
+
+  const [producto, setProducto] = useState(null);
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
   const [imagenes, setImagenes] = useState([]);
 
-  if (!producto) return <Typography>Producto no encontrado</Typography>;
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const [zoomImage, setZoomImage] = useState("");
 
-  const tieneVariantes = producto.variantes?.length > 0;
-
-  // 🔥 FIX DEFINITIVO DE IMÁGENES
+  // 🔥 TRAER PRODUCTO REAL DESDE API
   useEffect(() => {
+    const fetchProducto = async () => {
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/productos/${productoInicial.id}/`
+        );
+        const data = await res.json();
+        setProducto(data);
+      } catch (error) {
+        console.error("Error cargando producto", error);
+      }
+    };
+
+    if (productoInicial?.id) {
+      fetchProducto();
+    }
+  }, [productoInicial]);
+
+  // 🔥 MANEJO DE IMÁGENES
+  useEffect(() => {
+    if (!producto) return;
+
     let imgs = [];
 
     if (varianteSeleccionada?.imagenes?.length > 0) {
-      imgs = varianteSeleccionada.imagenes
-        .map((img) => img.imagen)
-        .filter((url) => typeof url === "string" && url.trim() !== "");
+      imgs = varianteSeleccionada.imagenes.map((img) => img.imagen);
     } else {
       imgs = [
         producto.imagen,
         ...(producto.imagenes?.map((i) => i.imagen) || []),
-      ].filter((url) => typeof url === "string" && url.trim() !== "");
+      ];
     }
 
-    // 🔥 eliminar duplicados
-    imgs = [...new Set(imgs)];
-
-    console.log("IMAGENES FINALES:", imgs); // DEBUG
+    imgs = [...new Set(imgs.filter(Boolean))];
 
     setImagenes(imgs);
 
-    // 🔥 reset slider
     setTimeout(() => {
       sliderRef.current?.slickGoTo(0);
     }, 0);
 
   }, [varianteSeleccionada, producto]);
+
+  if (!producto) return <Typography>Cargando...</Typography>;
+
+  const tieneVariantes = producto.variantes?.length > 0;
 
   const precioActual =
     varianteSeleccionada?.precio ?? producto.precio;
@@ -99,7 +115,7 @@ export default function ProductoDetalle() {
   const handleAdd = async () => {
     if (!isAuthenticated) {
       toast.info("Inicia sesión");
-      navigate("/login", { state: { from: location } });
+      navigate("/login");
       return;
     }
 
@@ -131,12 +147,10 @@ export default function ProductoDetalle() {
     speed: 400,
     slidesToShow: 1,
     slidesToScroll: 1,
-    adaptiveHeight: true,
   };
 
   return (
     <Box sx={containerSx}>
-      {/* VOLVER */}
       <Button
         startIcon={<ArrowBackIcon />}
         variant="outlined"
@@ -146,25 +160,18 @@ export default function ProductoDetalle() {
         Regresar
       </Button>
 
-      <Grid container spacing={5} justifyContent="center" alignItems="center">
-
+      <Grid container spacing={5} justifyContent="center">
         {/* IMÁGENES */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenContainerSx(theme)}>
-            {imagenes.length > 0 ? (
+            {imagenes.length > 0 && (
               <Slider ref={sliderRef} {...settings}>
                 {imagenes.map((img, i) => (
-                  <Box
-                    key={i}
-                    onClick={() => handleZoom(img)}
-                    sx={imagenSlideSx}
-                  >
+                  <Box key={i} onClick={() => handleZoom(img)}>
                     <Box component="img" src={img} sx={imagenSx} />
                   </Box>
                 ))}
               </Slider>
-            ) : (
-              <Typography>No hay imágenes disponibles</Typography>
             )}
           </Box>
         </Grid>
@@ -172,75 +179,33 @@ export default function ProductoDetalle() {
         {/* DETALLE */}
         <Grid item xs={12} md={6}>
           <Stack spacing={3} alignItems="center">
+            <Typography variant="h4">{producto.nombre}</Typography>
 
-            <Typography variant="h4" sx={tituloSx}>
-              {producto.nombre}
-            </Typography>
-
-            <Typography variant="h5" sx={precioSx(theme)}>
+            <Typography variant="h5">
               ${precioActual}
             </Typography>
 
             {tieneVariantes && (
               <>
-                <Typography fontWeight="bold">
-                  Selecciona una opción:
-                </Typography>
-
-                <Stack direction="row" sx={variantesContainerSx}>
-                  {producto.variantes.map((v) => {
-                    const isSelected =
-                      varianteSeleccionada?.id === v.id;
-
-                    const label = [...new Set(
-                      [v.talla, v.color, v.modelo, v.capacidad]
-                        .filter(Boolean)
-                        .map((x) => x.trim())
-                    )].join(" - ");
-
-                    return (
-                      <Button
-                        key={v.id}
-                        onClick={() => setVarianteSeleccionada(v)}
-                        disabled={v.stock === 0}
-                        sx={varianteBtnSx(isSelected, v.stock, theme)}
-                      >
-                        {label || "Única"}
-                      </Button>
-                    );
-                  })}
+                <Stack direction="row">
+                  {producto.variantes.map((v) => (
+                    <Button
+                      key={v.id}
+                      onClick={() => setVarianteSeleccionada(v)}
+                    >
+                      {v.talla} {v.color}
+                    </Button>
+                  ))}
                 </Stack>
-
-                {varianteSeleccionada && (
-                  <Chip
-                    label={`Stock: ${varianteSeleccionada.stock}`}
-                    sx={stockSx(varianteSeleccionada.stock)}
-                  />
-                )}
               </>
             )}
 
-            <Divider sx={{ width: "100%" }} />
-
-            <Typography sx={descripcionSx}>
-              {producto.descripcion}
-            </Typography>
+            <Typography>{producto.descripcion}</Typography>
 
             <Button
               variant="contained"
               startIcon={<AddShoppingCartIcon />}
               onClick={handleAdd}
-              disabled={
-                tieneVariantes
-                  ? !varianteSeleccionada ||
-                    varianteSeleccionada.stock === 0
-                  : stockTotal === 0
-              }
-              sx={botonAgregarSx(
-                tieneVariantes
-                  ? varianteSeleccionada?.stock
-                  : stockTotal
-              )}
             >
               Agregar al carrito
             </Button>
@@ -250,24 +215,12 @@ export default function ProductoDetalle() {
 
       {/* ZOOM */}
       <Dialog open={zoomOpen} onClose={() => setZoomOpen(false)}>
-        <Box sx={{ position: "relative", bgcolor: "#000" }}>
-          <IconButton
-            onClick={() => setZoomOpen(false)}
-            sx={{ position: "absolute", top: 10, right: 10, color: "#fff" }}
-          >
+        <Box>
+          <IconButton onClick={() => setZoomOpen(false)}>
             <CloseIcon />
           </IconButton>
 
-          <Box
-            component="img"
-            src={zoomImage}
-            sx={{
-              maxHeight: "80vh",
-              maxWidth: "100%",
-              display: "block",
-              margin: "auto",
-            }}
-          />
+          <Box component="img" src={zoomImage} />
         </Box>
       </Dialog>
     </Box>
