@@ -18,13 +18,11 @@ import { toast } from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
-import Slider from "react-slick";
 
 import {
   containerSx,
   botonVolverSx,
   imagenContainerSx,
-  imagenSlideSx,
   imagenSx,
   tituloSx,
   precioSx,
@@ -50,48 +48,34 @@ export default function ProductoDetalle() {
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
   const [imagenActiva, setImagenActiva] = useState("");
 
-  useEffect(() => {
-    const handleMenuOpen = () => setZoomOpen(false);
-    window.addEventListener("menuOpen", handleMenuOpen);
-    return () => window.removeEventListener("menuOpen", handleMenuOpen);
-  }, []);
-
   if (!producto) return <Typography>Producto no encontrado</Typography>;
 
   const tieneVariantes = producto.variantes?.length > 0;
 
-  // 🔥 NORMALIZAR IMÁGENES (CLAVE)
+  // 🔥 NORMALIZAR IMÁGENES
   const getImagen = (img) => {
     if (!img) return null;
-
-    // caso string
     if (typeof img === "string") return img;
-
-    // caso objeto { imagen: "" }
     if (typeof img === "object" && img.imagen) return img.imagen;
-
     return null;
   };
 
   const imagenes = useMemo(() => {
-    // 🔥 PRIORIDAD: VARIANTE
     if (varianteSeleccionada?.imagenes?.length > 0) {
       return varianteSeleccionada.imagenes
         .map(getImagen)
         .filter(Boolean);
     }
 
-    // 🔥 PRODUCTO BASE
-    const imgs = [
+    return [
       producto.imagen,
       ...(producto.imagenes || []),
     ]
       .map(getImagen)
       .filter(Boolean);
-
-    return [...new Set(imgs)];
   }, [producto, varianteSeleccionada]);
 
+  // 🔥 CAMBIO CLAVE
   useEffect(() => {
     if (imagenes.length > 0) {
       setImagenActiva(imagenes[0]);
@@ -101,13 +85,9 @@ export default function ProductoDetalle() {
   const precioActual =
     varianteSeleccionada?.precio ?? producto.precio;
 
-  const stockTotal = useMemo(() => {
-    if (!producto.variantes?.length) return producto.stock || 1;
-    return producto.variantes.reduce(
-      (acc, v) => acc + (v.stock || 0),
-      0
-    );
-  }, [producto]);
+  const stockTotal = producto.variantes?.length
+    ? producto.variantes.reduce((acc, v) => acc + (v.stock || 0), 0)
+    : producto.stock || 1;
 
   const handleAdd = async () => {
     if (!isAuthenticated) {
@@ -133,21 +113,8 @@ export default function ProductoDetalle() {
     }
   };
 
-  const handleZoom = (img) => {
-    setZoomImage(img);
-    setZoomOpen(true);
-  };
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-  };
-
   return (
     <Box sx={containerSx}>
-      {/* VOLVER */}
       <Button
         startIcon={<ArrowBackIcon />}
         variant="outlined"
@@ -158,20 +125,47 @@ export default function ProductoDetalle() {
       </Button>
 
       <Grid container spacing={5} justifyContent="center">
-        {/* IMÁGENES */}
+        {/* 🔥 IMÁGENES PRO */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenContainerSx(theme)}>
-            <Slider {...settings}>
+            
+            {/* IMAGEN PRINCIPAL */}
+            <Box
+              component="img"
+              src={imagenActiva}
+              sx={{
+                ...imagenSx,
+                cursor: "zoom-in",
+                mb: 2,
+              }}
+              onClick={() => {
+                setZoomImage(imagenActiva);
+                setZoomOpen(true);
+              }}
+            />
+
+            {/* 🔥 MINIATURAS */}
+            <Stack direction="row" spacing={1} flexWrap="wrap">
               {imagenes.map((img, i) => (
                 <Box
                   key={i}
-                  onClick={() => handleZoom(img)}
-                  sx={imagenSlideSx}
-                >
-                  <Box component="img" src={img} sx={imagenSx} />
-                </Box>
+                  component="img"
+                  src={img}
+                  onClick={() => setImagenActiva(img)}
+                  sx={{
+                    width: 70,
+                    height: 70,
+                    objectFit: "cover",
+                    borderRadius: 2,
+                    cursor: "pointer",
+                    border:
+                      imagenActiva === img
+                        ? "2px solid #1976d2"
+                        : "1px solid #ccc",
+                  }}
+                />
               ))}
-            </Slider>
+            </Stack>
           </Box>
         </Grid>
 
@@ -286,4 +280,4 @@ export default function ProductoDetalle() {
       </Dialog>
     </Box>
   );
-      }
+}
