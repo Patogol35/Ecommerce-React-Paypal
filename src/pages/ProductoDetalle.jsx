@@ -55,7 +55,8 @@ export default function ProductoDetalle() {
   const [zoomImage, setZoomImage] = useState("");
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
 
-  // cerrar zoom si se abre menú
+  const BASE_URL = import.meta.env.VITE_API_URL || "";
+
   useEffect(() => {
     const handleMenuOpen = () => setZoomOpen(false);
     window.addEventListener("menuOpen", handleMenuOpen);
@@ -66,16 +67,30 @@ export default function ProductoDetalle() {
 
   const tieneVariantes = producto.variantes?.length > 0;
 
-  // 🔥 IMÁGENES CORRECTAS (VARIANTE O PRODUCTO)
+  // 🔥 NORMALIZAR URL
+  const getImageUrl = (img) => {
+    if (!img) return "";
+
+    if (typeof img === "string") {
+      return img.startsWith("http") ? img : `${BASE_URL}${img}`;
+    }
+
+    const url = img.imagen || img.image || img.url || "";
+    return url.startsWith("http") ? url : `${BASE_URL}${url}`;
+  };
+
+  // 🔥 IMÁGENES DINÁMICAS
   const imagenes = useMemo(() => {
     let imgs = [];
 
     if (varianteSeleccionada?.imagenes?.length > 0) {
-      imgs = varianteSeleccionada.imagenes.map((img) => img.imagen);
+      console.log("VARIANTE IMGS:", varianteSeleccionada.imagenes);
+
+      imgs = varianteSeleccionada.imagenes.map(getImageUrl);
     } else {
       imgs = [
-        producto.imagen,
-        ...(producto.imagenes?.map((i) => i.imagen) || []),
+        getImageUrl(producto.imagen),
+        ...(producto.imagenes?.map(getImageUrl) || []),
       ];
     }
 
@@ -84,14 +99,12 @@ export default function ProductoDetalle() {
 
   const [imagenActiva, setImagenActiva] = useState("");
 
-  // 🔥 cambiar imagen activa
   useEffect(() => {
     if (imagenes.length > 0) {
       setImagenActiva(imagenes[0]);
     }
   }, [imagenes]);
 
-  // 🔥 reset slider cuando cambian imágenes
   useEffect(() => {
     if (sliderRef.current) {
       sliderRef.current.slickGoTo(0);
@@ -149,7 +162,6 @@ export default function ProductoDetalle() {
 
   return (
     <Box sx={containerSx}>
-      {/* BOTÓN VOLVER */}
       <Button
         startIcon={<ArrowBackIcon />}
         variant="outlined"
@@ -159,7 +171,6 @@ export default function ProductoDetalle() {
         Regresar
       </Button>
 
-      {/* GRID */}
       <Grid container spacing={5} justifyContent="center" alignItems="center">
         
         {/* IMÁGENES */}
@@ -167,7 +178,7 @@ export default function ProductoDetalle() {
           <Box sx={imagenContainerSx(theme)}>
             <Slider
               ref={sliderRef}
-              key={imagenes.join("-")} // 🔥 fuerza re-render
+              key={imagenes.join("-")}
               {...settings}
             >
               {imagenes.map((img, i) => (
@@ -195,7 +206,6 @@ export default function ProductoDetalle() {
               ${precioActual}
             </Typography>
 
-            {/* VARIANTES */}
             {tieneVariantes && (
               <>
                 <Typography fontWeight="bold">
@@ -241,7 +251,6 @@ export default function ProductoDetalle() {
               {producto.descripcion}
             </Typography>
 
-            {/* BOTÓN */}
             <Button
               variant="contained"
               startIcon={<AddShoppingCartIcon />}
@@ -313,4 +322,4 @@ export default function ProductoDetalle() {
       </Dialog>
     </Box>
   );
-                           }
+}
