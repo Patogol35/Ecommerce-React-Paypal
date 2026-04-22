@@ -79,25 +79,47 @@ export default function ProductoDetalle() {
       .filter(Boolean);
   }, [producto, varianteSeleccionada]);
 
-  // 🔥 CLAVE: imagen inicial desde el primer render
-  const [imagenMostrada, setImagenMostrada] = useState(
+  // 🔥 IMAGEN INICIAL (CLAVE)
+  const [imagenActiva, setImagenActiva] = useState(
     imagenes[0] || ""
   );
 
-  // 🔥 SOLO cambia cuando realmente cambia la lista
+  const [loadingImg, setLoadingImg] = useState(
+    !imagenes[0] // solo true si no hay imagen
+  );
+
+  // 🔥 ACTUALIZAR SOLO CUANDO CAMBIA LA FUENTE
   useEffect(() => {
     if (imagenes.length > 0) {
-      setImagenMostrada(imagenes[0]);
+      setLoadingImg(true);
+
+      const img = new Image();
+      img.src = imagenes[0];
+
+      img.onload = () => {
+        setImagenActiva(imagenes[0]);
+        setLoadingImg(false);
+      };
     }
   }, [imagenes]);
 
-  // 🔥 CAMBIO SIN VACÍO
-  const cambiarImagen = (imgUrl) => {
-    const img = new Image();
-    img.src = imgUrl;
+  // 🔥 PRELOAD SUAVE
+  useEffect(() => {
+    imagenes.forEach((img) => {
+      const i = new Image();
+      i.src = img;
+    });
+  }, [imagenes]);
 
-    img.onload = () => {
-      setImagenMostrada(imgUrl);
+  const cambiarImagen = (img) => {
+    setLoadingImg(true);
+
+    const i = new Image();
+    i.src = img;
+
+    i.onload = () => {
+      setImagenActiva(img);
+      setLoadingImg(false);
     };
   };
 
@@ -158,7 +180,7 @@ export default function ProductoDetalle() {
                     component="img"
                     src={img}
                     onClick={() => cambiarImagen(img)}
-                    sx={miniaturaSx(imagenMostrada === img)}
+                    sx={miniaturaSx(imagenActiva === img)}
                   />
                 ))}
               </Box>
@@ -170,14 +192,18 @@ export default function ProductoDetalle() {
                 cursor: "zoom-in",
               }}
               onClick={() => {
-                setZoomImage(imagenMostrada);
+                setZoomImage(imagenActiva);
                 setZoomOpen(true);
               }}
             >
               <Box
                 component="img"
-                src={imagenMostrada}
-                sx={imagenSx}
+                src={imagenActiva}
+                sx={{
+                  ...imagenSx,
+                  opacity: loadingImg ? 0 : 1,
+                  transition: "opacity 0.3s ease",
+                }}
               />
             </Box>
 
