@@ -8,7 +8,7 @@ import {
   Stack,
   Chip,
   Divider,
-  Dialog,
+ Dialog,
   IconButton,
   useTheme,
 } from "@mui/material";
@@ -22,8 +22,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import {
   containerSx,
   botonVolverSx,
-  imagenContainerSx,
-  imagenSx,
   tituloSx,
   precioSx,
   varianteBtnSx,
@@ -75,7 +73,6 @@ export default function ProductoDetalle() {
       .filter(Boolean);
   }, [producto, varianteSeleccionada]);
 
-  // 🔥 CAMBIO CLAVE
   useEffect(() => {
     if (imagenes.length > 0) {
       setImagenActiva(imagenes[0]);
@@ -91,7 +88,7 @@ export default function ProductoDetalle() {
 
   const handleAdd = async () => {
     if (!isAuthenticated) {
-      toast.info("Inicia sesión");
+      toast.info("Inicia sesión para continuar");
       navigate("/login", { state: { from: location } });
       return;
     }
@@ -107,7 +104,9 @@ export default function ProductoDetalle() {
         varianteSeleccionada?.id || null,
         1
       );
-      toast.success("Agregado al carrito ✅");
+
+      // 🔥 TU FORMATO ORIGINAL
+      toast.success(`${producto.nombre} agregado al carrito 🛒`);
     } catch (e) {
       toast.error(e.message);
     }
@@ -115,6 +114,7 @@ export default function ProductoDetalle() {
 
   return (
     <Box sx={containerSx}>
+      {/* VOLVER */}
       <Button
         startIcon={<ArrowBackIcon />}
         variant="outlined"
@@ -125,53 +125,75 @@ export default function ProductoDetalle() {
       </Button>
 
       <Grid container spacing={5} justifyContent="center">
+        
         {/* 🔥 IMÁGENES PRO */}
         <Grid item xs={12} md={6}>
-          <Box sx={imagenContainerSx(theme)}>
-            
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: "center",
+            }}
+          >
+            {/* MINIATURAS */}
+            {imagenes.length > 1 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "row", md: "column" },
+                  gap: 1,
+                  overflowX: "auto",
+                }}
+              >
+                {imagenes.map((img, i) => (
+                  <Box
+                    key={i}
+                    component="img"
+                    src={img}
+                    onClick={() => setImagenActiva(img)}
+                    sx={{
+                      width: 70,
+                      height: 70,
+                      objectFit: "cover",
+                      borderRadius: 2,
+                      cursor: "pointer",
+                      border:
+                        imagenActiva === img
+                          ? "2px solid #1976d2"
+                          : "1px solid #ccc",
+                      opacity: imagenActiva === img ? 1 : 0.6,
+                      transition: "0.3s",
+                    }}
+                  />
+                ))}
+              </Box>
+            )}
+
             {/* IMAGEN PRINCIPAL */}
             <Box
               component="img"
               src={imagenActiva}
-              sx={{
-                ...imagenSx,
-                cursor: "zoom-in",
-                mb: 2,
-              }}
               onClick={() => {
                 setZoomImage(imagenActiva);
                 setZoomOpen(true);
               }}
+              sx={{
+                width: "100%",
+                maxHeight: 450,
+                objectFit: "contain",
+                borderRadius: 2,
+                cursor: "zoom-in",
+                flex: 1,
+              }}
             />
-
-            {/* 🔥 MINIATURAS */}
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              {imagenes.map((img, i) => (
-                <Box
-                  key={i}
-                  component="img"
-                  src={img}
-                  onClick={() => setImagenActiva(img)}
-                  sx={{
-                    width: 70,
-                    height: 70,
-                    objectFit: "cover",
-                    borderRadius: 2,
-                    cursor: "pointer",
-                    border:
-                      imagenActiva === img
-                        ? "2px solid #1976d2"
-                        : "1px solid #ccc",
-                  }}
-                />
-              ))}
-            </Stack>
           </Box>
         </Grid>
 
         {/* DETALLE */}
         <Grid item xs={12} md={6}>
           <Stack spacing={3} alignItems="center">
+            
             <Typography variant="h4" sx={tituloSx}>
               {producto.nombre}
             </Typography>
@@ -183,7 +205,7 @@ export default function ProductoDetalle() {
             {tieneVariantes && (
               <>
                 <Typography fontWeight="bold">
-                  Selecciona:
+                  Selecciona una opción:
                 </Typography>
 
                 <Stack direction="row" sx={variantesContainerSx}>
@@ -244,7 +266,15 @@ export default function ProductoDetalle() {
                   : stockTotal
               )}
             >
-              Agregar al carrito
+              {tieneVariantes
+                ? varianteSeleccionada
+                  ? varianteSeleccionada.stock > 0
+                    ? "Agregar al carrito"
+                    : "Agotado"
+                  : "Seleccionar opción"
+                : stockTotal > 0
+                ? "Agregar al carrito"
+                : "Agotado"}
             </Button>
           </Stack>
         </Grid>
@@ -280,4 +310,4 @@ export default function ProductoDetalle() {
       </Dialog>
     </Box>
   );
-}
+        }
