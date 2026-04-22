@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -54,18 +54,14 @@ export default function ProductoDetalle() {
   const [zoomImage, setZoomImage] = useState("");
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
 
-  useEffect(() => {
-    const handleMenuOpen = () => setZoomOpen(false);
-    window.addEventListener("menuOpen", handleMenuOpen);
-    return () => window.removeEventListener("menuOpen", handleMenuOpen);
-  }, []);
+  const [imagenes, setImagenes] = useState([]);
 
   if (!producto) return <Typography>Producto no encontrado</Typography>;
 
   const tieneVariantes = producto.variantes?.length > 0;
 
-  // 🔥 IMÁGENES CORRECTAS
-  const imagenes = useMemo(() => {
+  // 🔥 CONTROL REAL DE IMÁGENES
+  useEffect(() => {
     let imgs = [];
 
     if (varianteSeleccionada?.imagenes?.length > 0) {
@@ -77,36 +73,34 @@ export default function ProductoDetalle() {
       ];
     }
 
-    return [...new Set(imgs.filter(Boolean))];
-  }, [producto, varianteSeleccionada]);
+    imgs = [...new Set(imgs.filter(Boolean))];
 
-  // 🔥 RESET SLIDER AL CAMBIAR IMÁGENES
-  useEffect(() => {
-    if (sliderRef.current) {
-      sliderRef.current.slickGoTo(0);
-    }
-  }, [imagenes]);
+    setImagenes(imgs);
+
+    // reset slider
+    setTimeout(() => {
+      sliderRef.current?.slickGoTo(0);
+    }, 0);
+
+  }, [varianteSeleccionada, producto]);
 
   const precioActual =
     varianteSeleccionada?.precio ?? producto.precio;
 
-  const stockTotal = useMemo(() => {
-    if (!producto.variantes?.length) return producto.stock || 0;
-    return producto.variantes.reduce(
-      (acc, v) => acc + (v.stock || 0),
-      0
-    );
-  }, [producto]);
+  const stockTotal = producto.variantes?.reduce(
+    (acc, v) => acc + (v.stock || 0),
+    0
+  ) || 0;
 
   const handleAdd = async () => {
     if (!isAuthenticated) {
-      toast.info("Inicia sesión para agregar productos");
+      toast.info("Inicia sesión");
       navigate("/login", { state: { from: location } });
       return;
     }
 
     if (tieneVariantes && !varianteSeleccionada) {
-      toast.warning("Selecciona una variante");
+      toast.warning("Selecciona variante");
       return;
     }
 
@@ -116,7 +110,7 @@ export default function ProductoDetalle() {
         varianteSeleccionada?.id || null,
         1
       );
-      toast.success(`"${producto.nombre}" agregado ✅`);
+      toast.success("Agregado ✅");
     } catch (e) {
       toast.error(e.message);
     }
@@ -129,7 +123,7 @@ export default function ProductoDetalle() {
 
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: imagenes.length > 1,
     speed: 400,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -148,21 +142,23 @@ export default function ProductoDetalle() {
       </Button>
 
       <Grid container spacing={5} justifyContent="center" alignItems="center">
-        
+
         {/* IMÁGENES */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenContainerSx(theme)}>
-            <Slider ref={sliderRef} key={imagenes.join("-")} {...settings}>
-              {imagenes.map((img, i) => (
-                <Box
-                  key={i}
-                  onClick={() => handleZoom(img)}
-                  sx={imagenSlideSx}
-                >
-                  <Box component="img" src={img} sx={imagenSx} />
-                </Box>
-              ))}
-            </Slider>
+            {imagenes.length > 0 && (
+              <Slider ref={sliderRef} {...settings}>
+                {imagenes.map((img, i) => (
+                  <Box
+                    key={i}
+                    onClick={() => handleZoom(img)}
+                    sx={imagenSlideSx}
+                  >
+                    <Box component="img" src={img} sx={imagenSx} />
+                  </Box>
+                ))}
+              </Slider>
+            )}
           </Box>
         </Grid>
 
@@ -239,33 +235,18 @@ export default function ProductoDetalle() {
                   : stockTotal
               )}
             >
-              {tieneVariantes
-                ? varianteSeleccionada
-                  ? varianteSeleccionada.stock > 0
-                    ? "Agregar al carrito"
-                    : "Agotado"
-                  : "Seleccionar opción"
-                : stockTotal > 0
-                ? "Agregar al carrito"
-                : "Agotado"}
+              Agregar al carrito
             </Button>
           </Stack>
         </Grid>
       </Grid>
 
       {/* ZOOM */}
-      <Dialog open={zoomOpen} onClose={() => setZoomOpen(false)} maxWidth="md">
-        <Box sx={{ position: "relative", bgcolor: theme.palette.background.default }}>
+      <Dialog open={zoomOpen} onClose={() => setZoomOpen(false)}>
+        <Box sx={{ position: "relative", bgcolor: "#000" }}>
           <IconButton
             onClick={() => setZoomOpen(false)}
-            sx={{
-              position: "absolute",
-              top: 10,
-              right: 10,
-              zIndex: 2,
-              bgcolor: "rgba(0,0,0,0.7)",
-              color: "#fff",
-            }}
+            sx={{ position: "absolute", top: 10, right: 10, color: "#fff" }}
           >
             <CloseIcon />
           </IconButton>
@@ -273,13 +254,11 @@ export default function ProductoDetalle() {
           <Box
             component="img"
             src={zoomImage}
-            onClick={() => setZoomOpen(false)}
             sx={{
               maxHeight: "80vh",
               maxWidth: "100%",
               display: "block",
-              margin: "0 auto",
-              cursor: "zoom-out",
+              margin: "auto",
             }}
           />
         </Box>
