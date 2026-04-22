@@ -13,26 +13,20 @@ export const containerSx = {
   gap: 4,
 };
 
-
 // ================================
 // BOTÓN VOLVER
 // ================================
 export const botonVolverSx = (theme) => ({
   alignSelf: "center",
-
   borderRadius: "999px",
   textTransform: "none",
   fontWeight: 500,
-
   px: 2,
   py: 0.6,
-
   border: "1px solid",
   borderColor: theme.palette.divider,
   color: theme.palette.text.primary,
-
   backdropFilter: "blur(6px)",
-
   transition: "all 0.25s ease",
 
   "&:hover": {
@@ -41,6 +35,42 @@ export const botonVolverSx = (theme) => ({
   },
 });
 
+// ================================
+// WRAPPER IMÁGENES (NUEVO)
+// ================================
+export const imagenWrapperSx = {
+  display: "flex",
+  gap: 2,
+  flexDirection: { xs: "column", md: "row" },
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+// ================================
+// MINIATURAS (NUEVO)
+// ================================
+export const miniaturasContainerSx = {
+  display: "flex",
+  flexDirection: { xs: "row", md: "column" },
+  gap: 1,
+  overflowX: "auto",
+};
+
+export const miniaturaSx = (activa) => ({
+  width: 65,
+  height: 65,
+  objectFit: "cover",
+  borderRadius: 2,
+  cursor: "pointer",
+  border: activa ? "2px solid #1976d2" : "1px solid #ccc",
+  opacity: activa ? 1 : 0.6,
+  transition: "all 0.25s ease",
+
+  "&:hover": {
+    opacity: 1,
+    transform: "scale(1.05)",
+  },
+});
 
 // ================================
 // IMAGEN CONTENEDOR
@@ -53,13 +83,12 @@ export const imagenContainerSx = (theme) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+
   maxHeight: 320,
   maxWidth: 240,
+
   border: "1px solid",
-  borderColor:
-    theme.palette.mode === "dark"
-      ? "#fff"
-      : "#000",
+  borderColor: theme.palette.mode === "dark" ? "#fff" : "#000",
 
   boxShadow:
     theme.palette.mode === "dark"
@@ -67,7 +96,6 @@ export const imagenContainerSx = (theme) => ({
       : "0 20px 50px rgba(0,0,0,0.08)",
 
   overflow: "hidden",
-
   transition: "all 0.3s ease",
 
   "&:hover": {
@@ -76,21 +104,8 @@ export const imagenContainerSx = (theme) => ({
 
   "&:hover img": {
     transform: "scale(1.08)",
-   },
+  },
 });
-
-
-// ================================
-// IMAGEN SLIDE
-// ================================
-export const imagenSlideSx = {
-//  display: "flex",
- // justifyContent: "center",
-//  alignItems: "center",
-//  height: { xs: 300, md: 500 },
-//  cursor: "pointer",
-};
-
 
 // ================================
 // IMAGEN
@@ -103,6 +118,34 @@ export const imagenSx = {
   transition: "transform 0.5s ease",
 };
 
+// ================================
+// ZOOM (NUEVO)
+// ================================
+export const zoomContainerSx = (theme) => ({
+  position: "relative",
+  bgcolor: theme.palette.background.default,
+});
+
+export const zoomCloseBtnSx = {
+  position: "absolute",
+  top: 10,
+  right: 10,
+  zIndex: 2,
+  bgcolor: "rgba(0,0,0,0.7)",
+  color: "#fff",
+
+  "&:hover": {
+    bgcolor: "rgba(0,0,0,0.9)",
+  },
+};
+
+export const zoomImagenSx = {
+  maxHeight: "80vh",
+  maxWidth: "100%",
+  display: "block",
+  margin: "0 auto",
+  cursor: "zoom-out",
+};
 
 // ================================
 // TÍTULO
@@ -112,34 +155,25 @@ export const tituloSx = {
   fontSize: { xs: "1.5rem", md: "2rem" },
 };
 
-
 // ================================
 // PRECIO
 // ================================
 export const precioSx = (theme) => ({
   fontWeight: 800,
   fontSize: "2rem",
-
-  color:
-    theme.palette.mode === "dark"
-      ? "#66b2ff"
-      : "#0d47a1",
+  color: theme.palette.mode === "dark" ? "#66b2ff" : "#0d47a1",
 });
-
 
 // ================================
 // STOCK
 // ================================
 export const stockSx = (stock) => ({
   alignSelf: "center",
-
   px: 1.8,
   py: 0.5,
-
   borderRadius: "999px",
   fontSize: "0.75rem",
   fontWeight: 600,
-
   backdropFilter: "blur(6px)",
 
   background:
@@ -152,7 +186,6 @@ export const stockSx = (stock) => ({
   border: "1px solid",
   borderColor: stock > 0 ? "#a5d6a7" : "#ef9a9a",
 });
-
 
 // ================================
 // VARIANTES
@@ -171,34 +204,25 @@ export const varianteBtnSx = (isSelected, stock, theme) => {
     borderRadius: "999px",
     textTransform: "none",
     fontWeight: 500,
-
     px: 2,
     py: 0.7,
 
-    // 🔥 BORDE SIEMPRE PRESENTE
     border: "1px solid",
     borderColor: isDark ? "#fff" : "#000",
 
-    // 🔥 FONDO
-    backgroundColor: isSelected
-  ? "#000"
-  : "#e3f2fd",
+    backgroundColor: isSelected ? "#000" : "#e3f2fd",
 
-    // 🔥 TEXTO
     color: isSelected
-  ? "#fff"
-  : isDark
-  ? "#000"
-  : theme.palette.text.primary,
+      ? "#fff"
+      : isDark
+      ? "#000"
+      : theme.palette.text.primary,
 
     opacity: stock === 0 ? 0.4 : 1,
-
     transition: "all 0.25s ease",
 
     "&:hover": {
       transform: stock > 0 ? "scale(1.05)" : "none",
-
-      // 🔥 HOVER MÁS INTENSO
       backgroundColor: isSelected
         ? "#000"
         : isDark
@@ -217,13 +241,11 @@ export const descripcionSx = {
   fontSize: "0.95rem",
 };
 
-
 // ================================
 // BOTÓN AGREGAR
 // ================================
 export const botonAgregarSx = (stock) => ({
   alignSelf: "center",
-
   borderRadius: "999px",
   px: 3,
   py: 1.2,
