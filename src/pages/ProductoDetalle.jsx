@@ -48,6 +48,11 @@ export default function ProductoDetalle() {
   const [zoomImage, setZoomImage] = useState("");
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
 
+  // 🔥 DEBUG REAL
+  useEffect(() => {
+    console.log("PRODUCTO:", producto);
+  }, [producto]);
+
   useEffect(() => {
     const handleMenuOpen = () => setZoomOpen(false);
     window.addEventListener("menuOpen", handleMenuOpen);
@@ -58,7 +63,6 @@ export default function ProductoDetalle() {
 
   const tieneVariantes = producto.variantes?.length > 0;
 
-  // 🔥 FUNCIÓN PARA EXTRAER IMÁGENES
   const extraerImagenes = (obj) => {
     if (!obj) return [];
 
@@ -79,7 +83,6 @@ export default function ProductoDetalle() {
     return imgs.filter(Boolean);
   };
 
-  // 🔥 IMÁGENES FINALES
   const imagenes = useMemo(() => {
     const imgsVariante = extraerImagenes(varianteSeleccionada);
 
@@ -154,7 +157,7 @@ export default function ProductoDetalle() {
 
       <Grid container spacing={5} justifyContent="center" alignItems="center">
         
-        {/* 🔥 IMÁGENES FIX */}
+        {/* IMÁGENES */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenContainerSx(theme)}>
             {imagenes.length > 0 ? (
