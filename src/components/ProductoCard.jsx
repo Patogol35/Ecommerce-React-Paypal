@@ -13,7 +13,6 @@ import {
   Stack,
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import InfoIcon from "@mui/icons-material/Info";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import StarIcon from "@mui/icons-material/Star";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
@@ -28,7 +27,6 @@ import {
   precioStackSx,
   dividerSx,
   botonAgregarSx,
-  botonDetallesSx,
 } from "./ProductoCard.styles";
 
 export default function ProductoCard({ producto, onAgregar }) {
@@ -50,7 +48,7 @@ export default function ProductoCard({ producto, onAgregar }) {
 
   // 📦 STOCK
   const stockTotal = useMemo(() => {
-    if (!producto.variantes || producto.variantes.length === 0) {
+    if (!producto.variantes?.length) {
       return producto.stock || 1;
     }
 
@@ -62,11 +60,7 @@ export default function ProductoCard({ producto, onAgregar }) {
 
   const tieneVariantes = producto.variantes?.length > 0;
 
-  const tieneStockVariantes = producto.variantes?.some(
-    (v) => v.stock > 0
-  );
-
-  // 💰 PRECIO DINÁMICO
+  // 💰 PRECIO
   const precioMinimo = useMemo(() => {
     if (!tieneVariantes) return producto.precio;
 
@@ -87,11 +81,9 @@ export default function ProductoCard({ producto, onAgregar }) {
       return;
     }
 
-    // 🔥 SI TIENE VARIANTES → IR A PÁGINA DETALLE
+    // 🔥 SI TIENE VARIANTES → IR A DETALLE (SIN STATE)
     if (tieneVariantes) {
-      navigate(`/producto/${producto.id}`, {
-        state: { producto },
-      });
+      navigate(`/producto/${producto.id}`);
       return;
     }
 
@@ -113,12 +105,12 @@ export default function ProductoCard({ producto, onAgregar }) {
     <Card sx={cardSx} elevation={0}>
       {/* IMAGEN */}
       <Box sx={imagenBoxSx}>
-  <Box
-    component="img"
-    src={imagenActiva || "/placeholder.png"}
-    alt={producto.nombre}
-    sx={imagenSx}
-  />
+        <Box
+          component="img"
+          src={imagenActiva || "/placeholder.png"}
+          alt={producto.nombre}
+          sx={imagenSx}
+        />
 
         {producto.nuevo && (
           <Chip
@@ -163,50 +155,44 @@ export default function ProductoCard({ producto, onAgregar }) {
 
       {/* CONTENIDO */}
       <Box sx={contenidoSx}>
-  {/* 🔹 PARTE SUPERIOR */}
-  <Box>
-    <Typography variant="h6" fontWeight="bold" sx={tituloSx}>
-      {producto.nombre}
-    </Typography>
+        <Box>
+          <Typography variant="h6" fontWeight="bold" sx={tituloSx}>
+            {producto.nombre}
+          </Typography>
 
-    {/* 💰 PRECIO */}
-    <Stack
-      direction="row"
-      alignItems="center"
-      spacing={0.5}
-      sx={precioStackSx}
-    >
-      <MonetizationOnIcon color="primary" />
-      <Typography variant="h6" color="primary" fontWeight="bold">
-        {tieneVariantes
-          ? `Desde $${precioMinimo}`
-          : `$${producto.precio}`}
-      </Typography>
-    </Stack>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={0.5}
+            sx={precioStackSx}
+          >
+            <MonetizationOnIcon color="primary" />
+            <Typography variant="h6" color="primary" fontWeight="bold">
+              {tieneVariantes
+                ? `Desde $${precioMinimo}`
+                : `$${producto.precio}`}
+            </Typography>
+          </Stack>
 
-    <Divider sx={dividerSx} />
-  </Box>
+          <Divider sx={dividerSx} />
+        </Box>
 
-  {/* 🔹 BOTONES ABAJO */}
-  <Box >
-    <Stack spacing={1}>
-      <Button
-        variant="contained"
-        fullWidth
-        startIcon={<ShoppingCartCheckoutIcon />}
-        sx={botonAgregarSx(stockTotal)}
-        onClick={() =>
-          navigate(`/producto/${producto.id}`, {
-            state: { producto },
-          })
-        }
-        disabled={stockTotal === 0}
-      >
-        {stockTotal > 0 ? "Ver opciones" : "Agotado"}
-      </Button>
-    </Stack>
-  </Box>
-</Box>
+        {/* BOTÓN */}
+        <Box>
+          <Stack spacing={1}>
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={<ShoppingCartCheckoutIcon />}
+              sx={botonAgregarSx(stockTotal)}
+              onClick={() => navigate(`/producto/${producto.id}`)} // 🔥 AQUÍ EL CAMBIO
+              disabled={stockTotal === 0}
+            >
+              {stockTotal > 0 ? "Ver opciones" : "Agotado"}
+            </Button>
+          </Stack>
+        </Box>
+      </Box>
     </Card>
   );
-  }
+      }
