@@ -49,14 +49,14 @@ export default function ProductoDetalle() {
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomImage, setZoomImage] = useState("");
 
-  // 🔥 FETCH REAL
+  // 🔥 FETCH
   useEffect(() => {
     const fetchProducto = async () => {
       try {
         const res = await fetch(`http://127.0.0.1:8000/api/productos/${id}/`);
         const data = await res.json();
-        console.log("PRODUCTO API:", data);
         setProducto(data);
+        setVarianteSeleccionada(null); // 🔥 RESET
       } catch (error) {
         console.error(error);
       }
@@ -65,6 +65,7 @@ export default function ProductoDetalle() {
     fetchProducto();
   }, [id]);
 
+  // 🔒 cerrar zoom si pasa algo global
   useEffect(() => {
     const handleMenuOpen = () => setZoomOpen(false);
     window.addEventListener("menuOpen", handleMenuOpen);
@@ -79,19 +80,15 @@ export default function ProductoDetalle() {
   const extraerImagenes = (obj) => {
     if (!obj) return [];
 
-    let imgs = [];
-
-    if (Array.isArray(obj.imagenes)) {
-      imgs.push(...obj.imagenes.map((i) => i.imagen));
-    }
-
-    if (obj.imagen) {
-      imgs.push(obj.imagen);
-    }
+    const imgs = [
+      ...(obj.imagenes?.map((i) => i.imagen) || []),
+      obj.imagen,
+    ];
 
     return imgs.filter(Boolean);
   };
 
+  // 🖼 IMÁGENES
   const imagenes = useMemo(() => {
     const imgsVariante = extraerImagenes(varianteSeleccionada);
 
@@ -115,6 +112,7 @@ export default function ProductoDetalle() {
     );
   }, [producto]);
 
+  // 🛒 AGREGAR
   const handleAdd = async () => {
     if (!isAuthenticated) {
       toast.info("Inicia sesión para agregar productos al carrito");
@@ -165,12 +163,12 @@ export default function ProductoDetalle() {
       </Button>
 
       <Grid container spacing={5} justifyContent="center" alignItems="center">
-        
-        {/* 🔥 IMÁGENES */}
+
+        {/* IMÁGENES */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenContainerSx(theme)}>
             {imagenes.length > 0 ? (
-              <Slider key={imagenes.join("-")} {...settings}>
+              <Slider key={imagenes.length} {...settings}>
                 {imagenes.map((img, i) => (
                   <Box key={i} onClick={() => handleZoom(img)} sx={imagenSlideSx}>
                     <Box component="img" src={img} sx={imagenSx} />
@@ -304,4 +302,4 @@ export default function ProductoDetalle() {
       </Dialog>
     </Box>
   );
-}
+                        }
