@@ -16,8 +16,7 @@ import { useCarrito } from "../context/CarritoContext";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import CloseIcon from "@mui/icons-material/Close";
 import Slider from "react-slick";
 
@@ -48,27 +47,28 @@ export default function ProductoDetalle() {
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomImage, setZoomImage] = useState("");
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
-useEffect(() => {
-  const handleMenuOpen = () => {
-    setZoomOpen(false);
-  };
+  const [imagenActiva, setImagenActiva] = useState("");
 
-  window.addEventListener("menuOpen", handleMenuOpen);
+  useEffect(() => {
+    const handleMenuOpen = () => setZoomOpen(false);
+    window.addEventListener("menuOpen", handleMenuOpen);
+    return () => window.removeEventListener("menuOpen", handleMenuOpen);
+  }, []);
 
-  return () => {
-    window.removeEventListener("menuOpen", handleMenuOpen);
-  };
-}, []);
-  
   if (!producto) return <Typography>Producto no encontrado</Typography>;
 
   const tieneVariantes = producto.variantes?.length > 0;
 
+  // 🔥 OBTENER TODAS LAS IMÁGENES CORRECTAMENTE
   const imagenes = useMemo(() => {
+    // ✅ PRIORIDAD: imágenes de variante
     if (varianteSeleccionada?.imagenes?.length > 0) {
-      return varianteSeleccionada.imagenes.map((img) => img.imagen);
+      return varianteSeleccionada.imagenes
+        .map((img) => img.imagen)
+        .filter(Boolean);
     }
 
+    // ✅ FALLBACK: imágenes del producto
     const imgs = [
       producto.imagen,
       ...(producto.imagenes?.map((i) => i.imagen) || []),
@@ -77,15 +77,10 @@ useEffect(() => {
     return [...new Set(imgs)];
   }, [producto, varianteSeleccionada]);
 
-  const [imagenActiva, setImagenActiva] = useState("");
-
+  // 🔥 SET IMAGEN ACTIVA
   useEffect(() => {
-    if (varianteSeleccionada?.imagenes?.length > 0) {
-      setImagenActiva(varianteSeleccionada.imagenes[0].imagen);
-    } else {
-      setImagenActiva(imagenes[0] || "");
-    }
-  }, [varianteSeleccionada, imagenes]);
+    setImagenActiva(imagenes[0] || "");
+  }, [imagenes]);
 
   const precioActual =
     varianteSeleccionada?.precio ?? producto.precio;
@@ -100,10 +95,10 @@ useEffect(() => {
 
   const handleAdd = async () => {
     if (!isAuthenticated) {
-  toast.info("Inicia sesión para agregar productos al carrito");
-  navigate("/login", { state: { from: location } });
-  return;
-}
+      toast.info("Inicia sesión para agregar productos al carrito");
+      navigate("/login", { state: { from: location } });
+      return;
+    }
 
     if (tieneVariantes && !varianteSeleccionada) {
       toast.warning("Selecciona una variante");
@@ -138,7 +133,6 @@ useEffect(() => {
 
   return (
     <Box sx={containerSx}>
-      {/* VOLVER */}
       <Button
         startIcon={<ArrowBackIcon />}
         variant="outlined"
@@ -148,17 +142,15 @@ useEffect(() => {
         Regresar
       </Button>
 
-      {/* 🔥 GRID CENTRADO REAL */}
-      <Grid
-        container
-        spacing={5}
-        justifyContent="center"
-        alignItems="center"
-      >
-        {/* IMÁGENES */}
+      <Grid container spacing={5} justifyContent="center" alignItems="center">
+        
+        {/* 🔥 IMÁGENES */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenContainerSx(theme)}>
-            <Slider {...settings}>
+            <Slider
+              {...settings}
+              key={varianteSeleccionada?.id || "producto"} // 🔥 FIX CLAVE
+            >
               {imagenes.map((img, i) => (
                 <Box
                   key={i}
@@ -174,7 +166,6 @@ useEffect(() => {
 
         {/* DETALLE */}
         <Grid item xs={12} md={6}>
-          {/* 🔥 STACK CENTRADO */}
           <Stack spacing={3} alignItems="center">
             <Typography variant="h4" sx={tituloSx}>
               {producto.nombre}
@@ -260,52 +251,44 @@ useEffect(() => {
       </Grid>
 
       {/* ZOOM */}
-      <Dialog
-  open={zoomOpen}
-  onClose={() => setZoomOpen(false)}
-  maxWidth="md"
->
-  <Box
-    sx={{
-      position: "relative",
-      bgcolor: theme.palette.background.default, // 🔥 dinámico claro/oscuro
-    }}
-  >
-    {/* BOTÓN X */}
-    <IconButton
-  onClick={() => setZoomOpen(false)}
-  sx={{
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 2,
+      <Dialog open={zoomOpen} onClose={() => setZoomOpen(false)} maxWidth="md">
+        <Box
+          sx={{
+            position: "relative",
+            bgcolor: theme.palette.background.default,
+          }}
+        >
+          <IconButton
+            onClick={() => setZoomOpen(false)}
+            sx={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              zIndex: 2,
+              bgcolor: "rgba(0,0,0,0.7)",
+              color: "#fff",
+              "&:hover": {
+                bgcolor: "rgba(0,0,0,0.9)",
+              },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
 
-    bgcolor: "rgba(0,0,0,0.7)", // 🔥 siempre negro
-    color: "#fff",
-
-    "&:hover": {
-      bgcolor: "rgba(0,0,0,0.9)",
-    },
-  }}
->
-  <CloseIcon />
-</IconButton>
-
-    {/* IMAGEN ZOOM */}
-    <Box
-      component="img"
-      src={zoomImage}
-      onClick={() => setZoomOpen(false)} // 👈 opcional (click para cerrar)
-      sx={{
-        maxHeight: "80vh",
-        maxWidth: "100%",
-        display: "block",
-        margin: "0 auto",
-        cursor: "zoom-out",
-      }}
-    />
-  </Box>
-</Dialog>
+          <Box
+            component="img"
+            src={zoomImage}
+            onClick={() => setZoomOpen(false)}
+            sx={{
+              maxHeight: "80vh",
+              maxWidth: "100%",
+              display: "block",
+              margin: "0 auto",
+              cursor: "zoom-out",
+            }}
+          />
+        </Box>
+      </Dialog>
     </Box>
   );
-}
+    }
