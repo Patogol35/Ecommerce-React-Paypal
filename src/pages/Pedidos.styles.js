@@ -42,34 +42,21 @@ const pedidosStyles = {
   },
 
   emptyState: {
-  mt: 8,
-  textAlign: "center",
-},
+    mt: 4,
+    textAlign: "center",
+  },
 
-emptyIcon: {
-  fontSize: 70,
-  opacity: 0.5,
-  mb: 1,
-},
+  emptyTitle: (theme) => ({
+    fontWeight: "bold",
+    color: theme.palette.text.primary,
+  }),
 
-emptyTitle: (theme) => ({
-  fontWeight: "bold",
-  mb: 1,
-  color: theme.palette.text.primary,
-}),
-
-emptySubtitle: (theme) => ({
-  color:
-    theme.palette.mode === "dark"
-      ? "rgba(255,255,255,0.8)"
-      : "#666",
-  mb: 2,
-}),
-
-emptyButton: {
-  mt: 1,
-  borderRadius: 2,
-},
+  emptySubtitle: (theme) => ({
+    color:
+      theme.palette.mode === "dark"
+        ? "#f5f5f5"
+        : "#666",
+  }),
 };
 
-export default styles; 
+export default pedidosStyles;
