@@ -22,6 +22,23 @@ borderColor:
     ? "#fff"   
     : "#000",  
 
+    emptyState: {
+  mt: 4,
+  textAlign: "center",
+},
+
+emptyTitle: (theme) => ({
+  fontWeight: "bold",
+  color: theme.palette.text.primary,
+}),
+
+emptySubtitle: (theme) => ({
+  color:
+    theme.palette.mode === "dark"
+      ? "#f5f5f5"
+      : "#666",
+}),
+
     // SOMBRA
     boxShadow:
       theme.palette.mode === "dark"
