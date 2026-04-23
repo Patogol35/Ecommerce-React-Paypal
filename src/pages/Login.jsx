@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { login as apiLogin } from "../api/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -37,21 +37,11 @@ const validators = {
 export default function Login() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { login, isAuthenticated, loading: authLoading } = useAuth();
+  const { login } = useAuth();
 
   const [form, setForm] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [authenticating, setAuthenticating] = useState(false);
-
-  // =====================
-  // REDIRECCIÓN AUTOMÁTICA
-  // =====================
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      navigate("/", { replace: true });
-    }
-  }, [isAuthenticated, authLoading, navigate]);
 
   // =====================
   // HANDLERS
@@ -103,7 +93,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (loading || authenticating || !validateForm()) return;
+    if (loading || !validateForm()) return;
 
     setLoading(true);
     try {
@@ -115,8 +105,8 @@ export default function Login() {
       }
 
       login(data.access, data.refresh);
-      toast.success("Bienvenido 👋");
-      // ❌ ya NO navegamos aquí
+      toast.success(`Bienvenido/a, ${form.username} 👋`);
+      navigate("/");
     } catch (error) {
       handleErrors(error);
     } finally {
@@ -131,8 +121,6 @@ export default function Login() {
     if (!credentialResponse?.credential) {
       return toast.error("Error con Google");
     }
-
-    setAuthenticating(true);
 
     try {
       const res = await fetch(
@@ -155,30 +143,13 @@ export default function Login() {
       }
 
       login(data.access, data.refresh);
-      toast.success("Login con Google exitoso 👌");
+      toast.success("Bienvenido con Google");
+      navigate("/");
     } catch (error) {
       console.error(error);
       toast.error("Error al iniciar con Google");
-    } finally {
-      setAuthenticating(false);
     }
   };
-
-  // =====================
-  // BLOQUEO GLOBAL (SPINNER)
-  // =====================
-  if (authLoading || authenticating) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <Container maxWidth="xs" sx={loginStyles.container(theme)}>
@@ -203,6 +174,7 @@ export default function Login() {
         </Typography>
 
         <form onSubmit={handleSubmit}>
+          {/* Usuario */}
           <TextField
             name="username"
             label="Usuario"
@@ -219,6 +191,7 @@ export default function Login() {
             }}
           />
 
+          {/* Contraseña */}
           <TextField
             name="password"
             label="Contraseña"
@@ -243,12 +216,13 @@ export default function Login() {
             }}
           />
 
+          {/* BOTONES */}
           <Box mt={3} display="flex" flexDirection="column" gap={2}>
             <Button
               type="submit"
               variant="contained"
               fullWidth
-              disabled={loading || authenticating}
+              disabled={loading}
               sx={loginStyles.botonLogin(theme)}
             >
               {loading ? (
@@ -269,12 +243,14 @@ export default function Login() {
           </Box>
         </form>
 
+        {/* DIVIDER */}
         <Box mt={3} textAlign="center">
           <Typography variant="body2" color="text.secondary">
             o continuar con
           </Typography>
         </Box>
 
+        {/* GOOGLE LOGIN */}
         <Box mt={2} display="flex" justifyContent="center">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
