@@ -5,10 +5,7 @@ const loginStyles = {
     justifyContent: "center",
     alignItems: "center",
     p: 2,
-    background:
-      theme.palette.mode === "dark"
-        ? "linear-gradient(135deg, #121212 0%, #1e1e1e 100%)"
-        : "linear-gradient(135deg, #42a5f5 0%, #1976d2 100%)",
+    
   }),
 
   paper: (theme) => ({
