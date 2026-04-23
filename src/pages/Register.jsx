@@ -187,7 +187,6 @@ export default function Register() {
         onChange={handleChange}
         required
         autoComplete={auto}
-        sx={registerStyles.input(theme)}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">{icon}</InputAdornment>
@@ -195,7 +194,7 @@ export default function Register() {
         }}
       />
     ),
-    [form, handleChange, theme]
+    [form, handleChange]
   );
 
   // ---------- SPINNER GLOBAL ----------
@@ -330,4 +329,4 @@ export default function Register() {
       </Paper>
     </Container>
   );
-    }
+      }
