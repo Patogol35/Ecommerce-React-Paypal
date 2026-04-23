@@ -194,13 +194,12 @@ export default function Login() {
         </Typography>
 
         <Typography
-          variant="body1"
-          align="center"
-          color="text.secondary"
-          sx={loginStyles.subtitulo}
-        >
-          Ingresa tus credenciales para continuar
-        </Typography>
+  variant="body1"
+  align="center"
+  sx={loginStyles.subtitulo(theme)}
+>
+  Ingresa tus credenciales para continuar
+</Typography>
 
         <form onSubmit={handleSubmit}>
           <TextField
