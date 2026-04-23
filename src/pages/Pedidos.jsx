@@ -22,6 +22,7 @@ const PAGE_SIZE = 10;
 
 export default function Pedidos() {
   const { access } = useAuth();
+  const theme = useTheme();
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
