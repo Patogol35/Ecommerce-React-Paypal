@@ -14,6 +14,7 @@ import {
   InputAdornment,
   FormControlLabel,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 
 import { useTheme } from "@mui/material/styles";
@@ -24,6 +25,10 @@ import {
   EmailOutlined,
   LockOutlined,
 } from "@mui/icons-material";
+
+import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../context/AuthContext";
+
 import registerStyles from "./Register.styles";
 
 // ---------- HELPERS ----------
@@ -68,6 +73,7 @@ const validators = {
 export default function Register() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [form, setForm] = useState({
     username: "",
@@ -78,6 +84,7 @@ export default function Register() {
 
   const [loading, setLoading] = useState(false);
   const [showPasswords, setShowPasswords] = useState(false);
+  const [authenticating, setAuthenticating] = useState(false);
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -102,6 +109,8 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading || authenticating) return;
     if (!validateForm()) return;
 
     setLoading(true);
@@ -115,11 +124,9 @@ export default function Register() {
 
       toast.success("Usuario registrado correctamente");
       navigate("/login");
-
     } catch (error) {
       const resp = error?.response?.data;
 
-      // ---- TRADUCIR MENSAJE DEL USUARIO REPETIDO ----
       const traducirUsuario = (msg) => {
         if (msg === "A user with that username already exists.") {
           return "El nombre de usuario ya está registrado";
@@ -129,20 +136,56 @@ export default function Register() {
 
       if (resp?.username?.[0])
         toast.error(traducirUsuario(resp.username[0]));
-
       else if (resp?.email?.[0])
         toast.error(resp.email[0]);
-
       else if (resp?.password?.[0])
         toast.error(resp.password[0]);
-
       else if (Array.isArray(resp))
         toast.error(resp[0]);
-
       else toast.error("Ocurrió un error en el registro");
-
     } finally {
       setLoading(false);
+    }
+  };
+
+  // =====================
+  // GOOGLE
+  // =====================
+  const handleGoogleSuccess = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      return toast.error("Error con Google");
+    }
+
+    setAuthenticating(true);
+
+    try {
+      const res = await fetch(
+        "https://backvariantes.onrender.com/api/google-login/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: credentialResponse.credential,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Error con Google");
+      }
+
+      login(data.access, data.refresh);
+      toast.success("Autenticado con Google 👌");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al iniciar con Google");
+    } finally {
+      setAuthenticating(false);
     }
   };
 
@@ -164,6 +207,15 @@ export default function Register() {
       autoComplete={auto}
     />
   );
+
+  // SPINNER GLOBAL
+  if (authenticating) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Container maxWidth="xs" sx={registerStyles.container(theme)}>
@@ -248,19 +300,44 @@ export default function Register() {
             sx={registerStyles.checkbox}
           />
 
-          <Box mt={3}>
+          <Box mt={3} display="flex" flexDirection="column" gap={2}>
             <Button
               type="submit"
               variant="contained"
               fullWidth
-              disabled={loading}
+              disabled={loading || authenticating}
               sx={registerStyles.boton(theme)}
             >
-              {loading ? "Creando cuenta..." : "Registrarse"}
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Registrarse"
+              )}
+            </Button>
+
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => navigate("/login")}
+            >
+              Ya tengo cuenta
             </Button>
           </Box>
         </form>
+
+        <Box mt={3} textAlign="center">
+          <Typography variant="body2" color="text.secondary">
+            o continuar con
+          </Typography>
+        </Box>
+
+        <Box mt={2} display="flex" justifyContent="center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => toast.error("Error con Google")}
+          />
+        </Box>
       </Paper>
     </Container>
   );
-}
+              }
