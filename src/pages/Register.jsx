@@ -164,7 +164,7 @@ export default function Register() {
       if (!res.ok) throw new Error(data.error);
 
       login(data.access, data.refresh);
-      toast.success("Autenticado con Google 👌");
+      toast.success("Login con Google exitoso 👌");
       navigate("/");
     } catch {
       toast.error("Error al iniciar con Google");
@@ -273,7 +273,7 @@ export default function Register() {
             sx={registerStyles.checkbox}
           />
 
-          {/* 🔥 BOTONES IGUAL QUE LOGIN */}
+          {/*  BOTONES */}
           <Box sx={registerStyles.acciones}>
             <Button
               type="submit"
