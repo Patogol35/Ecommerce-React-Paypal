@@ -43,9 +43,10 @@ const registerStyles = {
     color: theme.palette.mode === "dark" ? "#42a5f5" : "#1976d2",
   }),
 
-  subtitulo: {
-    mb: 2,
-  },
+  subtitulo: (theme) => ({
+  mb: 2,
+  color: theme.palette.text.secondary,
+}),
 
   strengthBox: {
     my: 1,
