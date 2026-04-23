@@ -55,34 +55,50 @@ const registerStyles = {
   },
 
   boton: (theme) => ({
-    py: 1.5,
-    fontWeight: "bold",
-    background:
-      theme.palette.mode === "dark"
-        ? "linear-gradient(135deg, #42a5f5, #1976d2)"
-        : "linear-gradient(135deg, #1976d2, #42a5f5)",
-    "&:hover": {
-      transform: "scale(1.03)",
-      boxShadow: "0 6px 12px rgba(0,0,0,0.15)",
-    },
-    transition: "all 0.3s",
-  }),
+  py: 1.4,
+  fontWeight: 600,
+  borderRadius: 2,
+
+  background:
+    theme.palette.mode === "dark"
+      ? "linear-gradient(135deg, #42a5f5, #1e88e5)"
+      : "linear-gradient(135deg, #1976d2, #42a5f5)",
+
+  color: "#fff",
+  boxShadow: "0 6px 18px rgba(0,0,0,0.2)",
+
+  transition: "all 0.25s ease",
+
+  "&:hover": {
+    transform: "translateY(-2px)", // 🔥 mejor que scale
+    boxShadow: "0 10px 22px rgba(0,0,0,0.25)",
+  },
+});
 
   botonRegister: (theme) => ({
-  py: 1.5,
-  fontWeight: "bold",
-  borderColor: theme.palette.mode === "dark" ? "#42a5f5" : "#1976d2",
-  color: theme.palette.mode === "dark" ? "#42a5f5" : "#1976d2",
+  py: 1.3,
+  fontWeight: 500,
+  borderRadius: 2,
+
+  border: "1px solid",
+  borderColor:
+    theme.palette.mode === "dark" ? "#42a5f5" : "#1976d2",
+
+  color:
+    theme.palette.mode === "dark" ? "#42a5f5" : "#1976d2",
+
+  backgroundColor: "transparent",
+
+  transition: "all 0.25s ease",
+
   "&:hover": {
     backgroundColor:
       theme.palette.mode === "dark"
         ? "rgba(66,165,245,0.08)"
         : "rgba(25,118,210,0.08)",
-    transform: "scale(1.03)",
-    borderColor: theme.palette.mode === "dark" ? "#42a5f5" : "#1976d2",
+    transform: "translateY(-2px)",
   },
-  transition: "all 0.3s",
-}),
+});
   
 };
 
