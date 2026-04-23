@@ -108,8 +108,23 @@ export default function Carrito() {
 
       {/* VACÍO */}
       {!loading && items.length === 0 && (
-        <Typography>Tu carrito está vacío.</Typography>
-      )}
+        {!loading && items.length === 0 && (
+  <Box sx={styles.emptyState}>
+    <Typography
+      variant="h6"
+      sx={styles.emptyTitle(theme)}
+    >
+      Tu carrito está vacío
+    </Typography>
+
+    <Typography
+      variant="body2"
+      sx={styles.emptySubtitle(theme)}
+    >
+      Agrega productos para comenzar tu compra
+    </Typography>
+  </Box>
+)}
 
       {/* ITEMS */}
       {!loading &&
