@@ -47,7 +47,7 @@ const registerStyles = {
   mb: 2,
   color:
     theme.palette.mode === "dark"
-      ? "#f5f5f5" /
+      ? "#f5f5f5" 
       : "#666",   
 }),
 
