@@ -123,9 +123,9 @@ export const precioStackSx = (theme) => ({
 export const dividerSx = (theme) => ({
   my: 1.2,
   mx: -2.2,
-  borderBottom: "1px solid",
-  borderColor: theme.palette.divider,
-  transition: "none",
+  height: "1px",
+  border: "none",
+  backgroundColor: theme.palette.divider,
 });
 
 
