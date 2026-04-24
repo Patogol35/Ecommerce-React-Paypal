@@ -120,12 +120,15 @@ export const precioStackSx = (theme) => ({
 // ================================
 // DIVIDER
 // ================================
-export const dividerSx = {
+export const dividerSx = (theme) => ({
   my: 1.8,
   height: "1px",
   border: "none",
-  background: "linear-gradient(to right, transparent, rgba(0,0,0,0.2), transparent)",
-};
+  background:
+    theme.palette.mode === "dark"
+      ? "linear-gradient(to right, transparent, rgba(255,255,255,0.25), transparent)"
+      : "linear-gradient(to right, transparent, rgba(0,0,0,0.2), transparent)",
+});
 
 
 // ================================
