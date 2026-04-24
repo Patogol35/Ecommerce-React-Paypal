@@ -40,14 +40,15 @@ const styles = {
 
   divider: (theme) => ({
   width: "100%",
-  my: 1.5,
   height: "1px",
   border: "none",
+  my: 1,
 
-  background:
+  // 🔥 color fijo sin interpolación rara
+  backgroundColor:
     theme.palette.mode === "dark"
-      ? "linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent)"
-      : "linear-gradient(to right, transparent, rgba(0,0,0,0.2), transparent)",
+      ? "rgba(255,255,255,0.12)"
+      : "rgba(0,0,0,0.12)",
 }),
 
   total: (theme) => ({
