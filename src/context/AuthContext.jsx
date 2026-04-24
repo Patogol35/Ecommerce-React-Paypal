@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [refresh, setRefresh] = useState(null);
   const [user, setUser] = useState(null);
 
-  // 🔥 estado real
+  // estado real
   const [status, setStatus] = useState("loading");
   // "loading" | "authenticated" | "guest" | "loggingOut"
 
@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
     fetchProfile();
   }, [access]);
 
-  // 🔥 LOGIN
+  // LOGIN
   const login = (accessToken, refreshToken) => {
     localStorage.setItem("access", accessToken);
     localStorage.setItem("refresh", refreshToken);
@@ -55,9 +55,9 @@ export function AuthProvider({ children }) {
     setStatus("authenticated");
   };
 
-  // 🔥 LOGOUT (CLAVE)
+  // LOGOUT (CLAVE)
   const logout = () => {
-    setStatus("loggingOut"); // 👈 evita flicker
+    setStatus("loggingOut"); 
 
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
@@ -76,7 +76,7 @@ export function AuthProvider({ children }) {
       user,
       login,
       logout,
-      status, // 👈 IMPORTANTE
+      status, 
     }),
     [access, refresh, user, status]
   );
