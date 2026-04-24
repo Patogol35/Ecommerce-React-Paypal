@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useThemeMode } from "../context/ThemeContext";
 import { useScrollTrigger } from "../hooks/useScrollTrigger";
-
+import { toast } from "react-toastify";
 import { authMenu, guestMenu } from "../config/menuConfig";
 import NavButton from "./NavButton";
 
@@ -57,12 +57,19 @@ export default function Navbar() {
 
   const handleCloseMenu = useCallback(() => setOpen(false), []);
 
-  // ✅ LOGOUT LIMPIO (sin delay, sin parpadeo)
+  // ✅ LOGOUT
   const handleLogout = useCallback(() => {
-    setOpen(false); // cierra drawer si está abierto
-    logout();
-    navigate("/login", { replace: true });
-  }, [logout, navigate]);
+  setOpen(false);
+
+  logout();
+
+  toast.success("Sesión cerrada correctamente 👋", {
+    position: "top-right",
+    autoClose: 2000,
+  });
+
+  navigate("/login", { replace: true });
+}, [logout, navigate]);
 
   const textColor = () => "#fff";
 
