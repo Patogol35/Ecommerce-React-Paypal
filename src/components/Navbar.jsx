@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useThemeMode } from "../context/ThemeContext";
 import { useScrollTrigger } from "../hooks/useScrollTrigger";
@@ -38,15 +38,11 @@ export default function Navbar() {
   const { isAuthenticated, logout, user } = useAuth();
   const { mode, toggleMode } = useThemeMode();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // 🔥 Oculta Navbar en rutas públicas (evita flicker al logout)
-  const hideNavbarRoutes = ["/login", "/register"];
-  if (hideNavbarRoutes.includes(location.pathname)) return null;
 
   const [open, setOpen] = useState(false);
   const scrolled = useScrollTrigger(50);
 
+  // ✅ Menú dinámico SIN snapshot (elimina flicker)
   const menu = isAuthenticated ? authMenu : guestMenu;
 
   const handleToggleMenu = useCallback(() => {
@@ -61,20 +57,19 @@ export default function Navbar() {
 
   const handleCloseMenu = useCallback(() => setOpen(false), []);
 
+  // ✅ LOGOUT
   const handleLogout = useCallback(() => {
-    setOpen(false);
+  setOpen(false);
 
-    // 👉 Navega primero para que el Navbar se oculte
-    navigate("/login", { replace: true });
+  logout();
 
-    // 👉 Luego limpia auth
-    logout();
+  toast.success("Sesión cerrada correctamente 👋", {
+    position: "top-right",
+    autoClose: 2000,
+  });
 
-    toast.success("Sesión cerrada correctamente 👋", {
-      position: "top-right",
-      autoClose: 2000,
-    });
-  }, [logout, navigate]);
+  navigate("/login", { replace: true });
+}, [logout, navigate]);
 
   const textColor = () => "#fff";
 
