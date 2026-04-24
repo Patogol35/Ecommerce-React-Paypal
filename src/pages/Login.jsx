@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { login as apiLogin } from "../api/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -37,21 +37,19 @@ const validators = {
 export default function Login() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { login, isAuthenticated, loading: authLoading } = useAuth();
+
+  const { login, isAuthenticated, isReady } = useAuth();
 
   const [form, setForm] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
 
-  // =====================
-  // REDIRECCIÓN AUTOMÁTICA
-  // =====================
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      navigate("/", { replace: true });
-    }
-  }, [isAuthenticated, authLoading, navigate]);
+  // 🚫 Bloquea render hasta que auth esté listo
+  if (!isReady) return null;
+
+  // 🚫 No renderizar login si ya está autenticado
+  if (isAuthenticated) return null;
 
   // =====================
   // HANDLERS
@@ -116,7 +114,6 @@ export default function Login() {
 
       login(data.access, data.refresh);
       toast.success(`Bienvenido/a, ${form.username || "usuario"} 👋`);
-    
     } catch (error) {
       handleErrors(error);
     } finally {
@@ -165,9 +162,9 @@ export default function Login() {
   };
 
   // =====================
-  // BLOQUEO GLOBAL (SPINNER)
+  // LOADING SOLO GOOGLE
   // =====================
-  if (authLoading || authenticating) {
+  if (authenticating) {
     return (
       <Box
         display="flex"
@@ -194,12 +191,12 @@ export default function Login() {
         </Typography>
 
         <Typography
-  variant="body1"
-  align="center"
-  sx={loginStyles.subtitulo(theme)}
->
-  Ingresa tus credenciales para continuar
-</Typography>
+          variant="body1"
+          align="center"
+          sx={loginStyles.subtitulo(theme)}
+        >
+          Ingresa tus credenciales para continuar
+        </Typography>
 
         <form onSubmit={handleSubmit}>
           <TextField
