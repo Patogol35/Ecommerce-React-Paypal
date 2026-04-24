@@ -1,5 +1,5 @@
 export const menuColors = {
-  primary: "linear-gradient(135deg, #00acc1, #4dd0e1)",
+  primary: "linear-gradient(135deg, #00bcd4, #4dd0e1)",
   success: "linear-gradient(135deg, #2e7d32, #66bb6a)",
   warning: "linear-gradient(135deg, #ed6c02, #ffb74d)",
   secondary: "linear-gradient(135deg, #6a1b9a, #ab47bc)",
