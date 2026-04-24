@@ -45,13 +45,18 @@ export function AuthProvider({ children }) {
     setRefresh(refreshToken);
   };
 
-  const logout = () => {
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
-    setAccess(null);
-    setRefresh(null);
-    setUser(null);
-  };
+  const logout = async () => {
+  setLoading(true); 
+
+  localStorage.removeItem("access");
+  localStorage.removeItem("refresh");
+
+  setAccess(null);
+  setRefresh(null);
+  setUser(null);
+
+  setLoading(false);
+};
 
   const value = useMemo(
     () => ({ access, refresh, isAuthenticated, user, login, logout, loading }),
