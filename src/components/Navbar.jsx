@@ -35,16 +35,20 @@ import styles from "./Navbar.styles";
 const MotionAppBar = motion(AppBar);
 
 export default function Navbar() {
-  const { status, logout, user } = useAuth(); // 🔥 CAMBIO
+  const { isAuthenticated, logout, user } = useAuth();
   const { mode, toggleMode } = useThemeMode();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false); // ✅ FIX
   const scrolled = useScrollTrigger(50);
-  const isAuthUI =
-    status === "authenticated" || status === "loggingOut";
 
-  const menu = isAuthUI ? authMenu : guestMenu;
+  // ✅ FIX: evita flicker al cerrar sesión
+  const menu = loggingOut
+    ? authMenu
+    : isAuthenticated
+    ? authMenu
+    : guestMenu;
 
   const handleToggleMenu = useCallback(() => {
     setOpen((prev) => {
@@ -58,23 +62,26 @@ export default function Navbar() {
 
   const handleCloseMenu = useCallback(() => setOpen(false), []);
 
+  // ✅ LOGOUT SIN FLICKER
   const handleLogout = useCallback(() => {
+    setLoggingOut(true); // 🚫 bloquea cambio visual
+
     setOpen(false);
 
-    logout(); 
-
-    navigate("/login", { replace: true });
+    logout();
 
     toast.success("Sesión cerrada correctamente 👋", {
       position: "top-right",
       autoClose: 2000,
     });
+
+    navigate("/login", { replace: true });
   }, [logout, navigate]);
 
   const textColor = () => "#fff";
 
   const UserSection = ({ showLogout = true, mobile = false }) =>
-    isAuthUI && (
+    isAuthenticated && (
       <Stack
         direction={mobile ? "column" : "row"}
         spacing={1.5}
@@ -176,7 +183,7 @@ export default function Navbar() {
 
           <MenuList onClick={handleCloseMenu} />
 
-          {isAuthUI && (
+          {isAuthenticated && (
             <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
               <Button
                 onClick={handleLogout}
@@ -197,4 +204,4 @@ export default function Navbar() {
       </Drawer>
     </>
   );
-}
+              }
