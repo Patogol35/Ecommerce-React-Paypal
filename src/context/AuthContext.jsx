@@ -8,39 +8,41 @@ export function AuthProvider({ children }) {
   const [refresh, setRefresh] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // controla cuándo la app puede renderizar
   const [isReady, setIsReady] = useState(false);
 
+  // Recuperar tokens al cargar
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const savedAccess = localStorage.getItem("access");
-        const savedRefresh = localStorage.getItem("refresh");
+    const savedAccess = localStorage.getItem("access");
+    const savedRefresh = localStorage.getItem("refresh");
 
-        if (savedAccess) {
-          setAccess(savedAccess);
-          setRefresh(savedRefresh);
+    if (savedAccess) setAccess(savedAccess);
+    if (savedRefresh) setRefresh(savedRefresh);
+    else setLoading(false); 
+  }, []);
 
-          try {
-            const data = await getUserProfile(savedAccess);
-            setUser(data);
-          } catch (err) {
-            console.error("Error obteniendo perfil:", err);
-            setUser(null);
-          }
-        } else {
+  // Obtener perfil cuando haya access
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (access) {
+        try {
+          const data = await getUserProfile(access);
+          setUser(data);
+        } catch (err) {
+          console.error("Error obteniendo perfil:", err);
           setUser(null);
         }
-      } catch (err) {
-        console.error("Error inicializando auth:", err);
+      } else {
         setUser(null);
-      } finally {
-        setLoading(false);
-        setIsReady(true); 
       }
+
+      setLoading(false);
+      setIsReady(true); 
     };
 
-    initAuth();
-  }, []);
+    fetchProfile();
+  }, [access]);
 
   const isAuthenticated = !!access;
 
@@ -51,15 +53,7 @@ export function AuthProvider({ children }) {
     setAccess(accessToken);
     setRefresh(refreshToken);
 
-    (async () => {
-      try {
-        const data = await getUserProfile(accessToken);
-        setUser(data);
-      } catch (err) {
-        console.error("Error obteniendo perfil:", err);
-        setUser(null);
-      }
-    })();
+    setIsReady(false); 
   };
 
   const logout = () => {
@@ -69,6 +63,8 @@ export function AuthProvider({ children }) {
     setAccess(null);
     setRefresh(null);
     setUser(null);
+
+    setIsReady(false); 
   };
 
   const value = useMemo(
@@ -80,7 +76,7 @@ export function AuthProvider({ children }) {
       login,
       logout,
       loading,
-      isReady,
+      isReady, 
     }),
     [access, refresh, isAuthenticated, user, loading, isReady]
   );
