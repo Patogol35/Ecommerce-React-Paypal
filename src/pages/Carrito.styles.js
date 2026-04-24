@@ -38,9 +38,17 @@ const styles = {
     zIndex: 1200,
   }),
 
-  divider: {
-    display: "none",
-  },
+  divider: (theme) => ({
+  width: "100%",
+  my: 1.5,
+  height: "1px",
+  border: "none",
+
+  background:
+    theme.palette.mode === "dark"
+      ? "linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent)"
+      : "linear-gradient(to right, transparent, rgba(0,0,0,0.2), transparent)",
+}),
 
   total: (theme) => ({
   display: "flex",
