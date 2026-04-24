@@ -1,29 +1,48 @@
-import { Button } from "@mui/material";
-import { motion } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
-import React from "react";
-import navButtonStyles from "./NavButton.styles";
+const navButtonStyles = (theme, isActive, item, alwaysColoredPaths) => ({
+  fontSize: "1.05rem",
+  fontWeight: 600,
+  color: "#fff",
+  borderRadius: "12px",
+  textTransform: "none",
+  width: "100%",
+  py: 1.2,
+  transition: "all 0.25s ease",
+  "& .MuiButton-startIcon": { color: "#fff" },
 
-function NavButton({ item, onClick }) {
-const location = useLocation();
-const isActive = location.pathname === item.path;
-const Icon = item.icon;
-const alwaysColoredPaths = ["/login", "/register"];
+  // Fondo dinámico
+  background: {
+    xs: item.color,
+    md:
+      isActive || alwaysColoredPaths.includes(item.path)
+        ? item.color
+        : "transparent",
+  },
 
-return (
-<motion.div whileHover={{ y: -2, scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-<Button
-component={Link}
-to={item.path}
-startIcon={<Icon />}
-onClick={onClick}
-aria-current={isActive ? "page" : undefined}
-sx={(theme) => navButtonStyles(theme, isActive, item, alwaysColoredPaths)}
->
-{item.label}
-</Button>
-</motion.div>
-);
-}
+  // Estado activo
+  boxShadow: isActive ? "0 0 20px rgba(255,255,255,0.5)" : "none",
+  transform: isActive ? "scale(1.04)" : "scale(1)",
 
-export default React.memo(NavButton);
+  // 🔥 HOVER FIX (arreglado)
+  "&:hover": {
+    background: {
+      xs: item.color,
+      md: `linear-gradient(135deg, ${item.color} 0%, ${item.color}e6 100%)`,
+    },
+    boxShadow: isActive
+      ? "0 0 20px rgba(0,0,0,0.4)"
+      : "0 0 12px rgba(0,0,0,0.25)",
+  },
+
+  // 🌙 DARK MODE
+  ...(theme.palette.mode === "dark" && {
+    color: "#fff",
+    "&:hover": {
+      background: {
+        xs: item.color,
+        md: `linear-gradient(135deg, ${item.color} 0%, ${item.color}dd 100%)`,
+      },
+    },
+  }),
+});
+
+export default navButtonStyles;
