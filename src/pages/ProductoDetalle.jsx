@@ -23,7 +23,7 @@ import {
   containerSx,
   botonVolverSx,
   imagenContainerSx,
-  dividerSx
+  dividerSx,
   imagenSx,
   tituloSx,
   precioSx,
