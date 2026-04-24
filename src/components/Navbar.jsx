@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useThemeMode } from "../context/ThemeContext";
@@ -42,30 +42,38 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const scrolled = useScrollTrigger(50);
 
-  const menuItems = useMemo(
-    () => (isAuthenticated ? authMenu : guestMenu),
-    [isAuthenticated]
+  // 🔥 SNAPSHOT DEL MENÚ (CLAVE PARA EVITAR FLICKER)
+  const [menuSnapshot, setMenuSnapshot] = useState(
+    isAuthenticated ? authMenu : guestMenu
   );
 
-  const handleToggleMenu = useCallback(() => {
-  setOpen((prev) => {
-    const next = !prev;
-
-    if (next) {
-      window.dispatchEvent(new Event("menuOpen")); // 👈 AQUÍ
+  useEffect(() => {
+    if (!open) {
+      setMenuSnapshot(isAuthenticated ? authMenu : guestMenu);
     }
+  }, [isAuthenticated, open]);
 
-    return next;
-  });
-}, []);
+  const handleToggleMenu = useCallback(() => {
+    setOpen((prev) => {
+      const next = !prev;
+
+      if (next) {
+        window.dispatchEvent(new Event("menuOpen"));
+      }
+
+      return next;
+    });
+  }, []);
 
   const handleCloseMenu = useCallback(() => setOpen(false), []);
 
   const handleLogout = useCallback(() => {
-  handleCloseMenu(); 
-  logout();
-  navigate("/login");
-}, [logout, navigate, handleCloseMenu]);
+    handleCloseMenu(); // cerrar primero
+    setTimeout(() => {
+      logout();
+      navigate("/login");
+    }, 200); // 👈 espera a que cierre animación
+  }, [logout, navigate, handleCloseMenu]);
 
   const textColor = () => "#fff";
 
@@ -95,8 +103,9 @@ export default function Navbar() {
       </Stack>
     );
 
+  // 🔥 USA SNAPSHOT
   const MenuList = ({ onClick }) =>
-    menuItems.map((item, idx) => (
+    menuSnapshot.map((item, idx) => (
       <NavButton key={idx} item={item} onClick={onClick} />
     ));
 
