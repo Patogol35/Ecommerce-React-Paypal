@@ -1,43 +1,45 @@
 import {
-Home as HomeIcon,
-ShoppingCart as ShoppingCartIcon,
-ListAlt as ListAltIcon,
-Login as LoginIcon,
-PersonAdd as PersonAddIcon,
+  Home as HomeIcon,
+  ShoppingCart as ShoppingCartIcon,
+  ListAlt as ListAltIcon,
+  Login as LoginIcon,
+  PersonAdd as PersonAddIcon,
 } from "@mui/icons-material";
 
+import { menuColors } from "../theme/colors"; // 👈 IMPORTANTE
+
 export const authMenu = [
-{
-label: "Inicio",
-path: "/",
-icon: HomeIcon,
-color: "linear-gradient(135deg, #0288d1, #26c6da)",
-},
-{
-label: "Carrito",
-path: "/carrito",
-icon: ShoppingCartIcon,
-color: "linear-gradient(135deg, #2e7d32, #66bb6a)",
-},
-{
-label: "Mis pedidos",
-path: "/pedidos",
-icon: ListAltIcon,
-color: "linear-gradient(135deg, #f57c00, #ffb74d)",
-},
+  {
+    label: "Inicio",
+    path: "/",
+    icon: HomeIcon,
+    color: menuColors.primary,
+  },
+  {
+    label: "Carrito",
+    path: "/carrito",
+    icon: ShoppingCartIcon,
+    color: menuColors.success,
+  },
+  {
+    label: "Mis pedidos",
+    path: "/pedidos",
+    icon: ListAltIcon,
+    color: menuColors.warning,
+  },
 ];
 
 export const guestMenu = [
-{
-label: "Iniciar sesión",
-path: "/login",
-icon: LoginIcon,
-color: "linear-gradient(135deg, #0288d1, #26c6da)",
-},
-{
-label: "Registrarse",
-path: "/register",
-icon: PersonAddIcon,
-color: "linear-gradient(135deg, #6a1b9a, #ab47bc)",
-},
+  {
+    label: "Iniciar sesión",
+    path: "/login",
+    icon: LoginIcon,
+    color: menuColors.primary,
+  },
+  {
+    label: "Registrarse",
+    path: "/register",
+    icon: PersonAddIcon,
+    color: menuColors.secondary,
+  },
 ];
