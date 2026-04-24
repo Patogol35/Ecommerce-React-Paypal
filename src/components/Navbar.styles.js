@@ -1,3 +1,4 @@
+import { menuColors } from "../theme/colors";
 const styles = {
 appBar: (theme, scrolled) => ({
 backgroundColor:
