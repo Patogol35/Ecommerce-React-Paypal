@@ -32,23 +32,18 @@ const navButtonStyles = (theme, isActive, item, alwaysColoredPaths) => ({
 
   // 🚀 Hover
   "&:hover": {
-    background: {
-      xs: item.color,
-      md: item.color,
-    },
-    boxShadow: isActive
-      ? "0 0 20px rgba(0,0,0,0.4)"
-      : "0 0 12px rgba(0,0,0,0.25)",
-    filter: "brightness(1.1)",
+  background: {
+    xs: item.color,
+    md: item.color,
   },
-
-  // 🌙 Dark mode
-  ...(theme.palette.mode === "dark" && {
-    color: "#fff",
-    "&:hover": {
-      filter: "brightness(1.2)",
-    },
-  }),
+  boxShadow: isActive
+    ? "0 0 20px rgba(0,0,0,0.4)"
+    : "0 0 12px rgba(0,0,0,0.25)",
+  filter:
+    theme.palette.mode === "dark"
+      ? "brightness(1.2)"
+      : "brightness(1.1)",
+},
 });
 
 export default navButtonStyles;
