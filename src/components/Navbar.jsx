@@ -41,8 +41,6 @@ export default function Navbar() {
 
   const [open, setOpen] = useState(false);
   const scrolled = useScrollTrigger(50);
-
-  // 🔥 estado correcto de UI
   const isAuthUI =
     status === "authenticated" || status === "loggingOut";
 
@@ -63,7 +61,7 @@ export default function Navbar() {
   const handleLogout = useCallback(() => {
     setOpen(false);
 
-    logout(); // 👈 ya maneja loggingOut internamente
+    logout(); 
 
     navigate("/login", { replace: true });
 
