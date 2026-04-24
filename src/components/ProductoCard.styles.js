@@ -123,6 +123,7 @@ export const precioStackSx = (theme) => ({
 export const dividerSx = (theme) => ({
   my: 1.2,
   borderColor: theme.palette.divider,
+  transition: "none", // 🔥 clave
 });
 
 
