@@ -5,7 +5,8 @@ const carritoItemStyles = {
     display: "flex",
     flexDirection: { xs: "column", sm: "row" },
 
-    alignItems: { xs: "stretch", sm: "center" },
+    // 🔥 clave para que el fondo cubra todo
+    alignItems: "stretch",
 
     mb: 3,
     mx: { xs: 2, sm: 0 },
@@ -34,33 +35,36 @@ const carritoItemStyles = {
 
   // 🖼 CONTENEDOR IMAGEN
   mediaWrapper: (theme) => ({
-  width: { xs: "100%", sm: 140 },
-  height: { xs: 180, sm: 120 },
+    width: { xs: "100%", sm: 140 },
 
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+    // 🔥 importante: no altura fija
+    height: "auto",
+    minHeight: { xs: 180, sm: 120 },
 
-  backgroundColor: theme.palette.action.hover,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
 
-  borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
+    backgroundColor: theme.palette.action.hover,
 
-  overflow: "hidden", // 🔥 IMPORTANTE
-}),
+    borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
+
+    overflow: "hidden",
+  }),
 
   // 🖼 IMAGEN
   media: {
-  width: "100%",
-  height: "100%",
-  objectFit: "contain",
+    width: "100%",
+    height: "100%",
+    objectFit: "contain",
 
-  padding: "8px", 
+    padding: "8px",
 
-  transition: "transform 0.3s ease",
-  "&:hover": {
-    transform: "scale(1.05)",
+    transition: "transform 0.3s ease",
+    "&:hover": {
+      transform: "scale(1.05)",
+    },
   },
-},
 
   // 📦 CONTENIDO
   content: (theme) => ({
@@ -69,7 +73,7 @@ const carritoItemStyles = {
     flexDirection: "column",
     justifyContent: "space-between",
 
-    p: { xs: 2.5, sm: 1.5 }, // 🔥 más compacto en horizontal
+    p: { xs: 2.5, sm: 1.5 },
     gap: { xs: 1, sm: 0.5 },
 
     borderLeft: {
