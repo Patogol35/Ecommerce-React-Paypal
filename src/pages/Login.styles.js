@@ -3,11 +3,10 @@ const loginStyles = {
   minHeight: "100vh",
   display: "flex",
   justifyContent: "center",
-  alignItems: "center",
+  alignItems: "flex-start", // 🔥 ya no centra vertical exacto
 
+  pt: "8vh", // 🔥 controla cuánto baja desde arriba
   px: 2,
-
-  transform: "translateY(-20px)", // 🔥 lo sube ligeramente
 }),
 
   paper: (theme) => ({
