@@ -1,11 +1,11 @@
 const loginStyles = {
   container: (theme) => ({
-  minHeight: "100vh", // 🔥 ocupa toda la pantalla
+  minHeight: "100vh",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
 
-  p: 0,
+  px: 2, // 🔥 espacio horizontal (no rompe el diseño)
 }),
 
   paper: (theme) => ({
