@@ -181,8 +181,8 @@ export default function Login() {
   }
 
   return (
-    <Box sx={loginStyles.container(theme)}>
-  <Paper elevation={8} sx={loginStyles.paper(theme)}>
+    <Container maxWidth="xs" sx={loginStyles.container(theme)}>
+      <Paper elevation={8} sx={loginStyles.paper(theme)}>
         <Typography
           variant="h4"
           align="center"
@@ -281,6 +281,6 @@ export default function Login() {
           />
         </Box>
       </Paper>
-    </Box>
+    </Container>
   );
-                                     }
+}
