@@ -250,7 +250,10 @@ export const varianteBtnSx = (isSelected, stock, theme) => ({
   py: 0.7,
 
   border: "1px solid",
-  borderColor: theme.palette.divider,
+  borderColor:
+  theme.palette.mode === "dark"
+    ? "rgba(255,255,255,0.5)" 
+    : "rgba(0,0,0,0.4)",      
 
   backgroundColor: isSelected
     ? theme.palette.primary.main
@@ -259,6 +262,7 @@ export const varianteBtnSx = (isSelected, stock, theme) => ({
   color: isSelected
     ? theme.palette.primary.contrastText
     : theme.palette.text.primary,
+  
 
   opacity: stock === 0 ? 0.4 : 1,
 
