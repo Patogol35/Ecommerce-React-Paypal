@@ -100,16 +100,25 @@ controlesWrapper: (theme) => {
     position: "relative",
 
     "&::before": {
-      content: '""',
-      position: "absolute",
-      top: 0,
-      left: 0,
+  content: '""',
+  position: "absolute",
+  top: 0,
+  left: 0,
 
-      width: { xs: "100%", sm: "1px" },
-      height: { xs: "1px", sm: "100%" },
+  width: { xs: "100%", sm: "1px" },
+  height: { xs: "1px", sm: "100%" },
 
-      backgroundColor: borderColor,
-    },
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255,255,255,0.8)" // 🔥 más fuerte en dark
+      : "rgba(0,0,0,0.6)",      // 🔥 más oscuro en light
+
+  // 💎 opcional para que resalte más
+  boxShadow:
+    theme.palette.mode === "dark"
+      ? "0 0 4px rgba(255,255,255,0.5)"
+      : "0 0 4px rgba(0,0,0,0.3)",
+},
   };
 },
 cantidadWrapper: {
