@@ -17,6 +17,9 @@ const registerStyles = {
     flexDirection: "column",
     gap: 3,
 
+    
+    border: "1px solid",
+
     borderColor:
   theme.palette.mode === "dark"
     ? "rgba(255,255,255,0.5)" // más blanco visible
