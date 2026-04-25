@@ -6,6 +6,7 @@ const loginStyles = {
     justifyContent: "center",
     alignItems: "center",
     p: 2,
+    transform: "translateY(-30px)",
   }),
 
   // 📦 CARD (PAPER)
