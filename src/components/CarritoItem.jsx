@@ -50,12 +50,14 @@ export default function CarritoItem({
   return (
     <Card sx={(theme) => carritoItemStyles.card(theme)}>
       {/* Imagen producto */}
-      <CardMedia
-        component="img"
-        image={imagen}
-        alt={it.producto?.nombre}
-        sx={(theme) => carritoItemStyles.media(theme)}
-      />
+      <Box sx={(theme) => carritoItemStyles.mediaWrapper(theme)}>
+  <Box
+    component="img"
+    src={imagen}
+    alt={it.producto?.nombre}
+    sx={carritoItemStyles.media}
+  />
+</Box>
 
       {/* Info producto */}
       <CardContent sx={carritoItemStyles.content}>
