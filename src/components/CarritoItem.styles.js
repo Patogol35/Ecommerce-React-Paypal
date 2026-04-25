@@ -42,10 +42,13 @@ media: (theme) => ({
   bgcolor: theme.palette.action.hover,
   p: 2,
 
-  boxSizing: "border-box", // 🔥 FIX
+  boxSizing: "border-box", // evita que el fondo se pase
 
-  transition: "transform 0.35s ease",
-  "&:hover": { transform: "scale(1.08)" },
+  transition: "transform 0.3s ease",
+
+  "&:hover": {
+    transform: "scale(1.03)", // 🔥 suave, no rompe bordes
+  },
 }),
 
 content: (theme) => ({
