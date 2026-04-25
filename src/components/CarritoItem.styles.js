@@ -7,7 +7,10 @@ card: (theme) => ({
   borderRadius: 4,
 
   border: "1px solid",
-  borderColor: theme.palette.divider,
+  borderColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255,255,255,0.35)"
+      : "rgba(0,0,0,0.25)",
 
   overflow: "hidden",
   backgroundColor: theme.palette.background.paper,
@@ -27,6 +30,7 @@ card: (theme) => ({
         : "0 8px 24px rgba(0,0,0,0.2)",
   },
 }),
+  
 media: (theme) => ({
   width: { xs: "100%", sm: 180 },
   height: { xs: 200, sm: 180 },
