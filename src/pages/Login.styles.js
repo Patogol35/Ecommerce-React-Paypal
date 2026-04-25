@@ -1,24 +1,40 @@
 const loginStyles = {
   container: (theme) => ({
-    minHeight: "75vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    p: 2,
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
 
-    // 🔥 fondo adaptado correctamente
-    background: theme.palette.background.default,
-  }),
+  background:
+    theme.palette.mode === "dark"
+      ? "#121212"
+      : "#f5f7fa",
+})
 
   paper: (theme) => ({
-  p: 4,
-  borderRadius: 4,
-  width: "100%",
+    p: 4,
+    borderRadius: 3,
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    gap: 3,
 
-  backgroundColor: "white", // 👈 FORZADO
-  border: "2px solid red",  // 👈 PARA VERLO CLARO
-  boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
-}),
+    // ✅ usar sistema MUI
+    backgroundColor: theme.palette.background.paper,
+    color: theme.palette.text.primary,
+
+    // ✅ borde correcto
+    border: "1px solid",
+    borderColor: theme.palette.divider,
+
+    // ✅ sombra adaptada
+    boxShadow:
+      theme.palette.mode === "dark"
+        ? "0 12px 24px rgba(0,0,0,0.6)"
+        : "0 12px 24px rgba(0,0,0,0.12)",
+
+    backdropFilter: "blur(6px)",
+  }),
 
   titulo: (theme) => ({
     color: theme.palette.primary.main,
