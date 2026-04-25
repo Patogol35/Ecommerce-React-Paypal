@@ -13,20 +13,16 @@ export const layoutStyles = (theme) => ({
 
     textAlign: "center",
 
-    background:
-      theme.palette.mode === "dark"
-        ? `linear-gradient(180deg, ${alpha(theme.palette.background.paper, 0.9)}, ${theme.palette.background.default})`
-        : `linear-gradient(180deg, ${theme.palette.background.paper}, ${alpha(theme.palette.grey[100], 0.6)})`,
+    // 🔵 fondo azul elegante con degradado
+    background: `linear-gradient(135deg, #0A66C2, #1976d2, #42a5f5)`,
 
-    borderTop: `1px solid ${
-      theme.palette.mode === "dark"
-        ? alpha("#fff", 0.12)
-        : alpha("#000", 0.08)
-    }`,
+    // ✨ borde superior sutil
+    borderTop: `1px solid ${alpha("#fff", 0.15)}`,
 
-    color: theme.palette.text.secondary,
+    // ⚪ texto blanco
+    color: "#fff",
 
-    fontSize: "0.8rem",
+    fontSize: "0.85rem",
     letterSpacing: "0.4px",
     lineHeight: 1.5,
 
@@ -39,34 +35,32 @@ export const layoutStyles = (theme) => ({
     mt: 0.5,
 
     "& .MuiIconButton-root": {
-      backgroundColor:
-        theme.palette.mode === "dark"
-          ? alpha("#fff", 0.05)
-          : alpha("#000", 0.04),
-
+      backgroundColor: alpha("#fff", 0.1),
+      color: "#fff",
       transition: "all 0.3s ease",
 
       "&:hover": {
         transform: "translateY(-3px) scale(1.12)",
+        backgroundColor: alpha("#fff", 0.2),
       },
     },
 
     // 🔵 Facebook
     "& .facebook:hover": {
-      color: "#1877F2",
-      boxShadow: "0 0 12px rgba(24,119,242,0.6)",
+      color: "#fff",
+      boxShadow: "0 0 14px rgba(255,255,255,0.6)",
     },
 
-    // 🟣 Instagram (gradiente glow)
+    // 🟣 Instagram
     "& .instagram:hover": {
-      color: "#E1306C",
-      boxShadow: "0 0 12px rgba(225,48,108,0.6)",
+      color: "#fff",
+      boxShadow: "0 0 14px rgba(255,255,255,0.6)",
     },
 
     // 🔷 LinkedIn
     "& .linkedin:hover": {
-      color: "#0A66C2",
-      boxShadow: "0 0 12px rgba(10,102,194,0.6)",
+      color: "#fff",
+      boxShadow: "0 0 14px rgba(255,255,255,0.6)",
     },
   },
 });
