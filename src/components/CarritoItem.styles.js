@@ -34,21 +34,22 @@ card: (theme) => ({
 }),
   
 media: (theme) => ({
-  width: { xs: "100%", sm: 160 }, // un poco más compacta
-  height: { xs: 170, sm: "100%" }, // 🔽 menor alto en móvil
+  width: { xs: "100%", sm: 180 },
+  height: { xs: 200, sm: "100%" },
   alignSelf: "stretch",
 
   objectFit: "contain",
   borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
 
   bgcolor: theme.palette.action.hover,
-  p: 3,
+  p: 2,
 
-  boxSizing: "border-box",
+  boxSizing: "border-box", // evita que el fondo se pase
 
   transition: "transform 0.3s ease",
+
   "&:hover": {
-    transform: "scale(1.03)",
+    transform: "scale(1.03)", // 🔥 suave, no rompe bordes
   },
 }),
 
