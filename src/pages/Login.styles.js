@@ -1,14 +1,14 @@
 const loginStyles = {
-  // 🌌 CONTENEDOR PRINCIPAL
+  //  CONTENEDOR PRINCIPAL
   container: () => ({
-  minHeight: "75vh", // 👈 clave, esto elimina el espacio feo
+  minHeight: "75vh", 
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   p: 2,
 }),
 
-  // 📦 CARD (PAPER)
+  //  CARD 
   paper: (theme) => ({
     p: 4,
     borderRadius: 3,
@@ -19,11 +19,11 @@ const loginStyles = {
 
     border: "1px solid",
     borderColor:
-      theme.palette.mode === "dark"
-        ? "rgba(255,255,255,0.25)"
-        : "rgba(0,0,0,0.15)",
+  theme.palette.mode === "dark"
+    ? "rgba(255,255,255,0.5)" // más blanco visible
+    : "rgba(0,0,0,0.4)",      // más negro visible
 
-    // 👇 usa UNA sola sombra
+    
     boxShadow: "0 12px 24px rgba(0,0,0,0.25)",
 
     backgroundColor:
@@ -35,11 +35,11 @@ const loginStyles = {
 
     backdropFilter: "blur(10px)",
 
-    // 🔥 transición para evitar flicker
+    
     transition: "all 0.3s ease",
   }),
 
-  // 🧠 TÍTULO
+  // TÍTULO
   titulo: (theme) => ({
     fontWeight: "bold",
     color:
@@ -48,13 +48,13 @@ const loginStyles = {
         : "#1976d2",
   }),
 
-  // ✏️ SUBTÍTULO
+  //  SUBTÍTULO
   subtitulo: (theme) => ({
     mb: 2,
     color: theme.palette.text.secondary,
   }),
 
-  // 🔘 BOTÓN LOGIN
+  //  BOTÓN LOGIN
   botonLogin: (theme) => ({
     py: 1.4,
     fontWeight: 600,
@@ -76,7 +76,7 @@ const loginStyles = {
     },
   }),
 
-  // 🔲 BOTÓN REGISTER
+  //  BOTÓN REGISTER
   botonRegister: (theme) => ({
     py: 1.3,
     fontWeight: 500,
@@ -106,7 +106,7 @@ const loginStyles = {
     },
   }),
 
-  // 📚 CONTENEDOR DE ACCIONES
+  // CONTENEDOR DE ACCIONES
   acciones: {
     display: "flex",
     flexDirection: "column",
