@@ -28,7 +28,7 @@ const styles = {
 
   transition: "all 0.25s ease",
 
-  // 🎨 Theme nativo (mejor rendimiento)
+  //  Theme 
   bgcolor: theme.palette.background.paper,
 
   border: "1px solid",
@@ -42,7 +42,6 @@ const styles = {
       ? "0 6px 18px rgba(0,0,0,0.5)"
       : "0 6px 16px rgba(0,0,0,0.1)",
 
-  // ✨ opcional (se siente más fluido)
   "&:hover": {
     boxShadow:
       theme.palette.mode === "dark"
