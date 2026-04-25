@@ -38,34 +38,34 @@ media: (theme) => ({
   borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
 
   bgcolor: theme.palette.action.hover,
-  p: 2,
-
-  borderBottom: {
-    xs: "1px solid",
-    sm: "none",
-  },
-  borderRight: {
-    xs: "none",
-    sm: "1px solid",
-  },
-
-  // 🔥 mejor usarlo así (más claro y consistente)
-borderColor:
-  theme.palette.mode === "dark"
-    ? "rgba(255,255,255,0.25)"
-    : "rgba(0,0,0,0.18)",          
+  p: 2,        
 
   transition: "transform 0.35s ease",
   "&:hover": { transform: "scale(1.08)" },
 }),
 
-content: {
-flex: 1,
-display: "flex",
-flexDirection: "column",
-justifyContent: "space-between",
-p: 2.5,
-gap: 1,
+content: (theme) => ({
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  p: 2.5,
+  gap: 1,
+
+  borderTop: {
+    xs: "1px solid",
+    sm: "none",
+  },
+  borderLeft: {
+    xs: "none",
+    sm: "1px solid",
+  },
+
+  borderColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255,255,255,0.35)"
+      : "rgba(0,0,0,0.25)",
+}),
 },
 
 titulo: {
