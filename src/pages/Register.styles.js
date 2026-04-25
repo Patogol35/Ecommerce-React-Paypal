@@ -1,5 +1,5 @@
 const registerStyles = {
-  // 🌌 CONTENEDOR
+  // CONTENEDOR
   container: () => ({
     minHeight: "75vh",
     display: "flex",
@@ -17,11 +17,10 @@ const registerStyles = {
     flexDirection: "column",
     gap: 3,
 
-    border: "1px solid",
     borderColor:
-      theme.palette.mode === "dark"
-        ? "rgba(255,255,255,0.25)"
-        : "rgba(0,0,0,0.15)",
+  theme.palette.mode === "dark"
+    ? "rgba(255,255,255,0.5)" // más blanco visible
+    : "rgba(0,0,0,0.4)",      // más negro visible
 
     boxShadow: "0 12px 24px rgba(0,0,0,0.25)",
 
@@ -34,11 +33,10 @@ const registerStyles = {
 
     backdropFilter: "blur(10px)",
 
-    // 🔥 evita flicker
     transition: "all 0.3s ease",
   }),
 
-  // 🧠 TÍTULO
+  //  TÍTULO
   titulo: (theme) => ({
     fontWeight: "bold",
     color:
@@ -47,13 +45,13 @@ const registerStyles = {
         : "#1976d2",
   }),
 
-  // ✏️ SUBTÍTULO
+  // SUBTÍTULO
   subtitulo: (theme) => ({
     mb: 2,
     color: theme.palette.text.secondary,
   }),
 
-  // 🔤 INPUTS (🔥 reutilizable)
+  // INPUTS 
   input: (theme) => ({
     input: {
       color: theme.palette.text.primary,
@@ -75,7 +73,7 @@ const registerStyles = {
     },
   }),
 
-  // 🔐 PASSWORD STRENGTH
+  // PASSWORD STRENGTH
   strengthBox: {
     my: 1,
   },
@@ -96,13 +94,13 @@ const registerStyles = {
     fontWeight: "bold",
   }),
 
-  // ☑️ CHECKBOX
+  //  CHECKBOX
   checkbox: (theme) => ({
     mt: 1,
     color: theme.palette.text.secondary,
   }),
 
-  // 🔘 BOTÓN PRINCIPAL
+  //  BOTÓN PRINCIPAL
   botonRegister: (theme) => ({
     py: 1.4,
     fontWeight: 600,
@@ -124,7 +122,7 @@ const registerStyles = {
     },
   }),
 
-  // 🔲 BOTÓN SECUNDARIO
+  //  BOTÓN SECUNDARIO
   botonLogin: (theme) => ({
     py: 1.3,
     fontWeight: 500,
@@ -154,7 +152,7 @@ const registerStyles = {
     },
   }),
 
-  // 📚 ACCIONES
+  // ACCIONES
   acciones: {
     display: "flex",
     flexDirection: "column",
