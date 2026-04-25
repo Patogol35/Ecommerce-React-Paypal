@@ -1,57 +1,31 @@
 const loginStyles = {
   // 🌌 CONTENEDOR PRINCIPAL
-  container: (theme) => ({
+  container: () => ({
     minHeight: "100vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     p: 2,
-
-    // 🔥 fondo dinámico según tema
-    backgroundColor:
-      theme.palette.mode === "dark" ? "#121212" : "#f5f5f5",
   }),
 
   // 📦 CARD (PAPER)
   paper: (theme) => ({
-  p: 4,
-  borderRadius: 3,
-  width: "100%",
-  display: "flex",
-  flexDirection: "column",
-  gap: 3,
+    p: 4,
+    borderRadius: 3,
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    gap: 3,
 
-  border: "1px solid",
-  borderColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255,255,255,0.25)"
-      : "rgba(0,0,0,0.15)",
-
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0 12px 24px rgba(0,0,0,0.6)"
-      : "0 12px 24px rgba(0,0,0,0.15)",
-
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(30,30,30,0.9)"
-      : "rgba(255,255,255,0.95)",
-
-  color: theme.palette.text.primary,
-
-  backdropFilter: "blur(10px)",
-
-  // 🔥 ESTO ES LA CLAVE
-  transition: "all 0.3s ease",
-}),
-
-    // 🌫 SOMBRA
-    boxShadow:
+    border: "1px solid",
+    borderColor:
       theme.palette.mode === "dark"
-        ? "0 12px 24px rgba(0,0,0,0.6)"
-        : "0 12px 24px rgba(0,0,0,0.15)",
+        ? "rgba(255,255,255,0.25)"
+        : "rgba(0,0,0,0.15)",
 
-    // 🎨 FONDO
+    // 👇 usa UNA sola sombra
+    boxShadow: "0 12px 24px rgba(0,0,0,0.25)",
+
     backgroundColor:
       theme.palette.mode === "dark"
         ? "rgba(30,30,30,0.9)"
@@ -59,7 +33,10 @@ const loginStyles = {
 
     color: theme.palette.text.primary,
 
-    backdropFilter: "blur(10px)", // 💎 glass effect
+    backdropFilter: "blur(10px)",
+
+    // 🔥 transición para evitar flicker
+    transition: "all 0.3s ease",
   }),
 
   // 🧠 TÍTULO
