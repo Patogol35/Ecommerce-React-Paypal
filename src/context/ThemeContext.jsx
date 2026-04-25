@@ -75,12 +75,14 @@ export function ThemeModeProvider({ children }) {
           },
 
           MuiCssBaseline: {
-            styleOverrides: {
-              body: {
-                transition: "background-color 0.3s ease",
-              },
-            },
-          },
+  styleOverrides: {
+    body: {
+      backgroundColor: mode === "dark" ? "#121212" : "#f5f5f5",
+      color: mode === "dark" ? "#ffffff" : "#111111",
+      transition: "background-color 0.3s ease, color 0.3s ease",
+    },
+  },
+},
         },
       }),
     [mode]
