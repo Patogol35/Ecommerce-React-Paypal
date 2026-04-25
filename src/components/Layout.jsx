@@ -33,15 +33,16 @@ export default function Layout() {
       <Navbar />
 
       {/* CONTENIDO */}
-      <Box
-  sx={{
-    flex: 1,
-    pt: `calc(${theme.mixins.toolbar.minHeight}px + 24px)`,
-    pb: 4,
-  }}
->
-  <Outlet />
-</Box>
+      <Container
+        maxWidth="lg"
+        sx={{
+          flex: 1,
+          pt: `calc(${theme.mixins.toolbar.minHeight}px + 24px)`,
+          pb: 4,
+        }}
+      >
+        <Outlet />
+      </Container>
 
       {/* 🛒 BOTÓN FLOTANTE CON CONTADOR */}
       <IconButton
