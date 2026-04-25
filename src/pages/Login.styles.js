@@ -1,13 +1,15 @@
 const loginStyles = {
   // 🌌 CONTENEDOR PRINCIPAL
   container: () => ({
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    p: 2,
-    transform: "translateY(-30px)",
-  }),
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "flex-start", // 👈 clave
+
+  pt: 8, // 👈 sube el login desde arriba
+  pb: 2, // 👈 controla el espacio abajo
+  px: 2,
+}),
 
   // 📦 CARD (PAPER)
   paper: (theme) => ({
