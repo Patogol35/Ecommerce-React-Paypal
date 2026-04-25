@@ -100,20 +100,16 @@ controlesWrapper: (theme) => {
     position: "relative",
 
     "&::before": {
-  content: '""',
-  position: "absolute",
-  top: 0,
-  left: 0,
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
 
-  width: { xs: "100%", sm: "1px" },
-  height: { xs: "1px", sm: "100%" },
+      width: { xs: "100%", sm: "1px" },
+      height: { xs: "1px", sm: "100%" },
 
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255,255,255,0.5)"
-      : "rgba(0,0,0,0.4)",
-},
-    
+      backgroundColor: borderColor,
+    },
   };
 },
 cantidadWrapper: {
