@@ -1,4 +1,4 @@
-      const loginStyles = {
+const loginStyles = {
   container: (theme) => ({
     minHeight: "75vh",
     display: "flex",
@@ -19,8 +19,8 @@
     border: "1px solid",
 borderColor:
   theme.palette.mode === "dark"
-    ? "#fff"   
-    : "#000",  
+    ? "rgba(255,255,255,0.5)" // más blanco visible
+    : "rgba(0,0,0,0.4)",      // más negro visible
 
     //  SOMBRA
     boxShadow:
