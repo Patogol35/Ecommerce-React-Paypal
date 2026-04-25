@@ -10,10 +10,10 @@ const carritoItemStyles = {
     borderRadius: 4,
 
     border: "1px solid",
-    borderColor:
-      theme.palette.mode === "dark"
-        ? alpha("#fff", 0.25)
-        : alpha("#000", 0.15),
+borderColor:
+  theme.palette.mode === "dark"
+    ? alpha("#fff", 0.45)
+    : alpha("#000", 0.45),
 
     overflow: "hidden",
     backgroundColor: theme.palette.background.paper,
@@ -33,14 +33,13 @@ const carritoItemStyles = {
   // 🔥 CONTENEDOR DE IMAGEN (SOLUCIÓN REAL)
   mediaWrapper: (theme) => ({
   width: { xs: "100%", sm: 180 },
-  minHeight: { xs: 180, sm: 180 }, // 🔥 consistente
+  minHeight: { xs: 180, sm: 180 },
 
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
 
-  backgroundColor:
-    theme.palette.mode === "dark" ? "#2c2c2c" : "#f5f5f5",
+  backgroundColor: theme.palette.action.hover,
 
   borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
 
@@ -49,9 +48,9 @@ const carritoItemStyles = {
   // 🔥 IMAGEN LIMPIA
   media: {
   width: "100%",
-  height: { xs: "auto", sm: "100%" }, // 🔥 clave
+  height: { xs: "auto", sm: "100%" }, 
 
-  maxHeight: { xs: 180, sm: "none" }, // 🔥 limita en vertical
+  maxHeight: { xs: 180, sm: "none" }, 
 
   objectFit: "contain",
   display: "block",
@@ -102,8 +101,8 @@ const carritoItemStyles = {
     borderTop: {
       xs: `1px solid ${
         theme.palette.mode === "dark"
-          ? alpha("#fff", 0.15)
-          : alpha("#000", 0.1)
+      ? alpha("#fff", 0.45)
+      : alpha("#000", 0.45)
       }`,
       sm: "none",
     },
