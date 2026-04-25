@@ -38,10 +38,24 @@ media: (theme) => ({
   borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
 
   bgcolor: theme.palette.action.hover,
-
   p: 2,
-  transition: "transform 0.35s ease",
 
+  borderBottom: {
+    xs: "2px solid",
+    sm: "none",
+  },
+  borderRight: {
+    xs: "none",
+    sm: "2px solid",
+  },
+
+  // 🔥 mejor usarlo así (más claro y consistente)
+  borderColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255,255,255,0.5)"
+      : "rgba(0,0,0,0.4)",
+
+  transition: "transform 0.35s ease",
   "&:hover": { transform: "scale(1.08)" },
 }),
 
