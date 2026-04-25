@@ -1,89 +1,95 @@
-import { alpha } from "@mui/material/styles";
-
 const carritoItemStyles = {
-  card: (theme) => ({
-    display: "flex",
-    flexDirection: { xs: "column", sm: "row" },
-    alignItems: "stretch", // 🔥 importante para que todo tenga misma altura
-    mb: 3,
-    mx: { xs: 2, sm: 0 },
-    borderRadius: 4,
+card: (theme) => ({
+  display: "flex",
+  flexDirection: { xs: "column", sm: "row" },
+  mb: 3,
+  mx: { xs: 2, sm: 0 },
+  borderRadius: 4,
 
-    border: "1px solid",
-    borderColor:
-      theme.palette.mode === "dark"
-        ? alpha("#fff", 0.25)
-        : alpha("#000", 0.15),
+  border: "1px solid",
+  borderColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255,255,255,0.35)"
+      : "rgba(0,0,0,0.25)",
 
-    overflow: "hidden",
-    backgroundColor: theme.palette.background.paper,
+  overflow: "hidden",
+  backgroundColor: theme.palette.background.paper,
 
+  boxShadow:
+    theme.palette.mode === "dark"
+      ? "0 4px 14px rgba(0,0,0,0.6)"
+      : "0 4px 12px rgba(0,0,0,0.12)",
+
+  transition: "all 0.3s ease",
+
+  "&:hover": {
+    transform: "translateY(-2px)",
     boxShadow:
       theme.palette.mode === "dark"
-        ? "0 4px 14px rgba(0,0,0,0.6)"
-        : "0 4px 12px rgba(0,0,0,0.12)",
-
-    transition: "all 0.25s ease",
-
-    "&:hover": {
-      transform: "translateY(-2px)",
-    },
-  }),
-
-  // 🔥 CONTENEDOR DE IMAGEN (SOLUCIÓN REAL)
-  mediaWrapper: (theme) => ({
-    width: { xs: "100%", sm: 180 },
-    minHeight: { xs: 200, sm: 180 },
-
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-
-    backgroundColor:
-      theme.palette.mode === "dark" ? "#2c2c2c" : "#f5f5f5",
-
-    borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
-
-    p: 2,
-    boxSizing: "border-box",
-  }),
-
-  // 🔥 IMAGEN LIMPIA
-  media: {
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    display: "block",
-
-    transition: "transform 0.3s ease",
-    "&:hover": {
-      transform: "scale(1.05)",
-    },
+        ? "0 8px 24px rgba(0,0,0,0.8)"
+        : "0 8px 24px rgba(0,0,0,0.2)",
   },
+}),
+  
+media: (theme) => ({
+  width: { xs: "100%", sm: 180 },
+  height: { xs: 200, sm: 180 },
+  objectFit: "contain",
+  borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
 
-  content: (theme) => ({
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    p: 2.5,
-    gap: 1,
+  bgcolor: theme.palette.action.hover,
 
-    borderTop: {
-      xs: "1px solid",
-      sm: "none",
-    },
-    borderLeft: {
-      xs: "none",
-      sm: "1px solid",
-    },
-    borderColor:
-      theme.palette.mode === "dark"
-        ? alpha("#fff", 0.15)
-        : alpha("#000", 0.1),
-  }),
+  p: 2,
+  transition: "transform 0.35s ease",
 
-  controlesWrapper: (theme) => ({
+  "&:hover": { transform: "scale(1.08)" },
+}),
+
+content: {
+flex: 1,
+display: "flex",
+flexDirection: "column",
+justifyContent: "space-between",
+p: 2.5,
+gap: 1,
+},
+
+titulo: {
+fontWeight: 600,
+fontSize: "1.1rem",
+lineHeight: 1.4,
+mb: 0.5,
+},
+
+descripcion: {
+display: "-webkit-box",
+WebkitLineClamp: 2,
+WebkitBoxOrient: "vertical",
+overflow: "hidden",
+textOverflow: "ellipsis",
+color: "text.secondary",
+fontSize: "0.9rem",
+mb: 1.5,
+},
+
+chipSubtotal: {
+fontWeight: "bold",
+fontSize: "0.95rem",
+},
+
+chipStock: {
+fontWeight: "bold",
+fontSize: "0.85rem",
+opacity: 0.8,
+},
+
+controlesWrapper: (theme) => {
+  const borderColor =
+    theme.palette.mode === "dark"
+      ? "rgba(255,255,255,0.35)"
+      : "rgba(0,0,0,0.25)";
+
+  return {
     display: "flex",
     flexDirection: { xs: "row", sm: "column" },
     justifyContent: "center",
@@ -91,89 +97,62 @@ const carritoItemStyles = {
     p: 2,
     gap: 1.5,
 
-    borderLeft: {
-      sm: `1px solid ${
-        theme.palette.mode === "dark"
-          ? alpha("#fff", 0.15)
-          : alpha("#000", 0.1)
-      }`,
+    position: "relative",
+
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+
+      width: { xs: "100%", sm: "1px" },
+      height: { xs: "1px", sm: "100%" },
+
+      backgroundColor: borderColor,
     },
-    borderTop: {
-      xs: `1px solid ${
-        theme.palette.mode === "dark"
-          ? alpha("#fff", 0.15)
-          : alpha("#000", 0.1)
-      }`,
-      sm: "none",
-    },
-  }),
+  };
+},
+cantidadWrapper: {
+display: "flex",
+alignItems: "center",
+gap: 1,
+bgcolor: "action.hover",
+borderRadius: 2,
+px: 1,
+py: 0.5,
+},
 
-  titulo: {
-    fontWeight: 600,
-    fontSize: "1.05rem",
-    lineHeight: 1.4,
-    mb: 0.5,
-  },
+botonCantidad: {
+minWidth: 32,
+minHeight: 32,
+borderRadius: "50%",
+bgcolor: "background.paper",
+boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+"&:hover": {
+bgcolor: "action.hover",
+transform: "scale(1.1)",
+},
+transition: "all 0.2s ease",
+},
 
-  descripcion: {
-    display: "-webkit-box",
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: "vertical",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    color: "text.secondary",
-    fontSize: "0.88rem",
-    mb: 1.2,
-  },
+cantidadInput: {
+width: 50,
+"& input": {
+textAlign: "center",
+fontWeight: "bold",
+fontSize: "1rem",
+borderRadius: 2,
+},
+},
 
-  chipSubtotal: {
-    fontWeight: "bold",
-    fontSize: "0.95rem",
-  },
-
-  chipStock: {
-    fontWeight: "bold",
-    fontSize: "0.85rem",
-    opacity: 0.8,
-  },
-
-  cantidadWrapper: {
-    display: "flex",
-    alignItems: "center",
-    gap: 1,
-    bgcolor: "action.hover",
-    borderRadius: 2,
-    px: 1,
-    py: 0.5,
-  },
-
-  botonCantidad: {
-    minWidth: 32,
-    minHeight: 32,
-    borderRadius: "50%",
-    bgcolor: "background.paper",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    "&:hover": {
-      transform: "scale(1.1)",
-    },
-    transition: "all 0.2s ease",
-  },
-
-  cantidadInput: {
-    width: 50,
-    "& input": {
-      textAlign: "center",
-      fontWeight: "bold",
-      fontSize: "1rem",
-    },
-  },
-
-  botonEliminar: {
-    color: "error.main",
-    borderRadius: 2,
-    px: 2,
-    "&:hover": { bgcolor: "rgba(211,47,47,0.1)" },
-  },
+botonEliminar: {
+color: "error.main",
+borderRadius: 2,
+px: 2,
+"&:hover": { bgcolor: "rgba(211,47,47,0.1)" },
+},
 };
 
 export default carritoItemStyles;
+
+  
