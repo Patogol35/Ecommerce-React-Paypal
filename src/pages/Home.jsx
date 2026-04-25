@@ -147,7 +147,7 @@ export default function Home() {
               <ProductoCard
                 producto={prod}
                 onAgregar={handleAdd}
-                onVerDetalle={handleVerDetalle} /
+                onVerDetalle={handleVerDetalle} 
               />
             </motion.div>
           </Grid>
