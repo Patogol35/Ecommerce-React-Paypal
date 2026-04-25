@@ -9,7 +9,7 @@ const loginStyles = {
     theme.palette.mode === "dark"
       ? "#121212"
       : "#f5f7fa",
-})
+}),
 
   paper: (theme) => ({
     p: 4,
