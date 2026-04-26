@@ -132,41 +132,34 @@ export default function ProductoCard({ producto, onAgregar }) {
       </Box>
 
       {/* MINIATURAS */}
-{imagenes.length > 1 && (
-  <>
-    <Divider sx={dividerSx} />
-
-    <Stack
-      direction="row"
-      spacing={1}
-      sx={{ px: 1, mt: 1, justifyContent: "center" }}
-    >
-      {imagenes.map((img, i) => (
-        <Box
-          key={i}
-          component="img"
-          src={img}
-          alt={`img-${i}`}
-          onClick={() => setImagenActiva(img)}
-          sx={(theme) => ({
-            width: 45,
-            height: 45,
-            objectFit: "cover",
-            borderRadius: 1,
-            cursor: "pointer",
-            border: "2px solid",
-            borderColor:
-              imagenActiva === img
-                ? theme.palette.primary.main
-                : theme.palette.mode === "dark"
-                ? "rgba(255,255,255,0.2)"
-                : "rgba(0,0,0,0.2)",
-          })}
-        />
-      ))}
-    </Stack>
-  </>
-)}
+      {imagenes.length > 1 && (
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ px: 1, mt: 1, justifyContent: "center" }}
+        >
+          {imagenes.map((img, i) => (
+            <Box
+              key={i}
+              component="img"
+              src={img}
+              alt={`img-${i}`}
+              onClick={() => setImagenActiva(img)}
+              sx={{
+                width: 45,
+                height: 45,
+                objectFit: "cover",
+                borderRadius: 1,
+                cursor: "pointer",
+                border:
+                  imagenActiva === img
+                    ? "2px solid #1976d2"
+                    : "1px solid #999",
+              }}
+            />
+          ))}
+        </Stack>
+      )}
 
       {/* CONTENIDO */}
       <Box sx={contenidoSx}>
@@ -216,4 +209,4 @@ export default function ProductoCard({ producto, onAgregar }) {
 </Box>
     </Card>
   );
-    }
+       }
