@@ -12,10 +12,10 @@ const carritoItemStyles = {
     borderRadius: 4,
 
     border: "1px solid",
-borderColor:
-  theme.palette.mode === "dark"
-    ? alpha("#fff", 0.45)
-    : alpha("#000", 0.45),
+    borderColor:
+      theme.palette.mode === "dark"
+        ? alpha("#fff", 0.45)
+        : alpha("#000", 0.45),
 
     overflow: "hidden",
     backgroundColor: theme.palette.background.paper,
@@ -34,93 +34,120 @@ borderColor:
 
   //  CONTENEDOR IMAGEN
   mediaWrapper: (theme) => ({
-  width: { xs: "100%", sm: 140 },
+    width: { xs: "100%", sm: 140 },
+    height: "auto",
 
-  height: "auto",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
 
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+    backgroundColor: theme.palette.action.hover,
 
-  backgroundColor: theme.palette.action.hover,
+    borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
 
-  borderRadius: { xs: "16px 16px 0 0", sm: "16px 0 0 16px" },
+    p: 1.5,
+  }),
 
-  p: 1.5,
-}),
   // Imagen
   media: {
-  width: "100%",
+    width: "100%",
+    maxHeight: { xs: 180, sm: 120 },
+    objectFit: "contain",
 
-  // tamaño visual
-  maxHeight: { xs: 180, sm: 120 },
-
-  objectFit: "contain",
-
-  transition: "transform 0.3s ease",
-  "&:hover": {
-    transform: "scale(1.05)",
-  },
-},
-
-  //  CONTENIDO
-  content: (theme) => ({
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-
-  p: { xs: 2.5, sm: 1.5 },
-  gap: { xs: 1, sm: 0.5 },
-
-  //  borde superior (móvil)
-  borderTop: {
-    xs: `1px solid ${
-      theme.palette.mode === "dark"
-        ? alpha("#fff", 0.25)
-        : alpha("#000", 0.25)
-    }`,
-    sm: "none",
-  },
-
-  // borde lateral (horizontal)
-  borderLeft: {
-    sm: `1px solid ${
-      theme.palette.mode === "dark"
-        ? alpha("#fff", 0.25)
-        : alpha("#000", 0.25)
-    }`,
-  },
-}),
-
-  // CONTROLES
-  controlesWrapper: (theme) => ({
-    display: "flex",
-    flexDirection: { xs: "row", sm: "column" },
-
-    justifyContent: "center",
-    alignItems: "center",
-
-    p: { xs: 2, sm: 1 },
-    gap: { xs: 1.5, sm: 1 },
-
-    borderLeft: {
-      sm: `1px solid ${
-        theme.palette.mode === "dark"
-            ? alpha("#fff", 0.25)
-      : alpha("#000", 0.25)
-      }`,
+    transition: "transform 0.3s ease",
+    "&:hover": {
+      transform: "scale(1.05)",
     },
+  },
 
-    borderTop: {
-      xs: `1px solid ${
-        theme.palette.mode === "dark"
-            ? alpha("#fff", 0.45)
-      : alpha("#000", 0.45)
-      }`,
-      sm: "none",
-    },
-  }),
+  //  CONTENIDO (🔥 mejorado)
+  content: (theme) => {
+    const baseColor =
+      theme.palette.mode === "dark"
+        ? "rgba(255,255,255,0.25)"
+        : "rgba(0,0,0,0.25)";
+
+    return {
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+
+      p: { xs: 2.5, sm: 1.5 },
+      gap: { xs: 1, sm: 0.5 },
+
+      position: "relative",
+
+      // línea superior (móvil)
+      "&::before": {
+        content: '""',
+        display: { xs: "block", sm: "none" },
+        position: "absolute",
+        top: 0,
+        left: 16,
+        right: 16,
+        height: "1px",
+        background: `linear-gradient(to right, transparent, ${baseColor}, transparent)`,
+      },
+
+      // línea lateral (desktop)
+      "&::after": {
+        content: '""',
+        display: { xs: "none", sm: "block" },
+        position: "absolute",
+        top: 16,
+        bottom: 16,
+        left: 0,
+        width: "1px",
+        background: `linear-gradient(to bottom, transparent, ${baseColor}, transparent)`,
+      },
+    };
+  },
+
+  // CONTROLES (🔥 mejorado)
+  controlesWrapper: (theme) => {
+    const baseColor =
+      theme.palette.mode === "dark"
+        ? "rgba(255,255,255,0.25)"
+        : "rgba(0,0,0,0.25)";
+
+    return {
+      display: "flex",
+      flexDirection: { xs: "row", sm: "column" },
+
+      justifyContent: "center",
+      alignItems: "center",
+
+      p: { xs: 2, sm: 1 },
+      gap: { xs: 1.5, sm: 1 },
+
+      position: "relative",
+
+      // línea superior (móvil)
+      "&::before": {
+        content: '""',
+        display: { xs: "block", sm: "none" },
+        position: "absolute",
+        top: 0,
+        left: 16,
+        right: 16,
+        height: "1px",
+        background: `linear-gradient(to right, transparent, ${baseColor}, transparent)`,
+      },
+
+      // línea lateral (desktop)
+      "&::after": {
+        content: '""',
+        display: { xs: "none", sm: "block" },
+        position: "absolute",
+        top: 16,
+        bottom: 16,
+        left: 0,
+        width: "1px",
+        background: `linear-gradient(to bottom, transparent, ${baseColor}, transparent)`,
+      },
+    };
+  },
 
   titulo: {
     fontWeight: 600,
