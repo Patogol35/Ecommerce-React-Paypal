@@ -125,8 +125,8 @@ export const precioStackSx = (theme) => ({
 export const dividerSx = (theme) => {
   const borderColor =
     theme.palette.mode === "dark"
-      ? alpha("#fff", 0.45)
-      : alpha("#000", 0.45);
+      ? alpha("#fff", 0.25)
+      : alpha("#000", 0.25);
 
   return {
     my: 1.8,
