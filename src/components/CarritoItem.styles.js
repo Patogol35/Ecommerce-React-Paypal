@@ -37,7 +37,6 @@ borderColor:
   mediaWrapper: (theme) => ({
   width: { xs: "100%", sm: 140 },
 
-  // 🔥 el contenedor SÍ crece
   height: "auto",
 
   display: "flex",
@@ -50,11 +49,11 @@ borderColor:
 
   p: 1.5,
 }),
-  // 🖼 IMAGEN
+  // Imagen
   media: {
   width: "100%",
 
-  // 🔥 aquí controlas el tamaño visual
+  // tamaño visual
   maxHeight: { xs: 180, sm: 120 },
 
   objectFit: "contain",
@@ -65,7 +64,7 @@ borderColor:
   },
 },
 
-  // 📦 CONTENIDO
+  //  CONTENIDO
   content: (theme) => ({
   flex: 1,
   display: "flex",
@@ -75,12 +74,12 @@ borderColor:
   p: { xs: 2.5, sm: 1.5 },
   gap: { xs: 1, sm: 0.5 },
 
-  // 🔥 borde superior (móvil)
+  //  borde superior (móvil)
   borderTop: {
     xs: `1px solid ${
       theme.palette.mode === "dark"
-        ? alpha("#fff", 0.45)
-        : alpha("#000", 0.45)
+        ? alpha("#fff", 0.25)
+        : alpha("#000", 0.25)
     }`,
     sm: "none",
   },
@@ -89,8 +88,8 @@ borderColor:
   borderLeft: {
     sm: `1px solid ${
       theme.palette.mode === "dark"
-        ? alpha("#fff", 0.45)
-        : alpha("#000", 0.45)
+        ? alpha("#fff", 0.25)
+        : alpha("#000", 0.25)
     }`,
   },
 }),
