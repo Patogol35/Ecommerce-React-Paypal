@@ -18,11 +18,11 @@ const styles = {
   },
 
   footerBox: (theme) => ({
-  position: "static", 
+  position: "static",
 
   width: "100%",
   maxWidth: 500,
-  margin: "24px auto 0", 
+  margin: "24px auto 0",
 
   display: "flex",
   flexDirection: "column",
@@ -30,25 +30,11 @@ const styles = {
   justifyContent: "center",
   gap: 1.5,
 
-  // 🔥 estilo tipo card (mantiene diseño elegante)
-  padding: "16px 12px",
-  borderRadius: 16,
+  padding: 0, // 🔥 sin fondo tipo card
 
-  background:
-    theme.palette.mode === "dark"
-      ? "rgba(255,255,255,0.05)"
-      : "#fff",
-
-  border: "1px solid",
-  borderColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255,255,255,0.15)"
-      : "rgba(0,0,0,0.08)",
-
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0 6px 20px rgba(0,0,0,0.6)"
-      : "0 6px 20px rgba(0,0,0,0.1)",
+  background: "transparent",
+  border: "none",
+  boxShadow: "none",
 }),
 
   divider: {
