@@ -17,20 +17,18 @@ const styles = {
     fontSize: 34,
   },
 
-  footerBox: (theme) => ({
+footerBox: (theme) => ({
   position: "static",
 
   width: "100%",
-  maxWidth: 500,
-  margin: "24px auto 0",
+  marginTop: "24px",
 
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: 1.5,
+  alignItems: "stretch", 
+  gap: 1.2,
 
-  padding: 0, // 🔥 sin fondo tipo card
+  padding: 0,
 
   background: "transparent",
   border: "none",
