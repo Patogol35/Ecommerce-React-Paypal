@@ -132,7 +132,13 @@ export default function ProductoCard({ producto, onAgregar }) {
       </Box>
 
 {/* 🔥 DIVIDER DESPUÉS DE IMAGEN */}
-<Divider sx={dividerSx} />
+<Divider
+  sx={(theme) => ({
+    ...dividerSx(theme),
+    mt: 0,     // pegado a la imagen
+    mb: 1,     // pequeño espacio abajo
+  })}
+/>
 
 {/* MINIATURAS */}
 {imagenes.length > 1 && (
