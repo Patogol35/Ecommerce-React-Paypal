@@ -67,6 +67,7 @@ export default function Pedidos() {
     }
   };
 
+  // 🔄 LOADING
   if (loading && pedidos.length === 0)
     return (
       <Container sx={{ mt: 4 }}>
@@ -74,23 +75,18 @@ export default function Pedidos() {
       </Container>
     );
 
+  // 📭 EMPTY
   if (totalCount === 0)
     return (
       <Container sx={pedidosStyles.emptyState}>
-  <Typography
-    variant="h6"
-    sx={pedidosStyles.emptyTitle(theme)}
-  >
-    Aún no tienes pedidos
-  </Typography>
+        <Typography variant="h6" sx={pedidosStyles.emptyTitle(theme)}>
+          Aún no tienes pedidos
+        </Typography>
 
-  <Typography
-    variant="body2"
-    sx={pedidosStyles.emptySubtitle(theme)}
-  >
-    Cuando compres algo aparecerá aquí
-  </Typography>
-</Container>
+        <Typography variant="body2" sx={pedidosStyles.emptySubtitle(theme)}>
+          Cuando compres algo aparecerá aquí
+        </Typography>
+      </Container>
     );
 
   return (
@@ -111,15 +107,7 @@ export default function Pedidos() {
           <CardContent>
 
             {/* HEADER */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: 1,
-                mb: 2,
-              }}
-            >
+            <Box sx={pedidosStyles.headerBox}>
               <Typography fontWeight="bold">
                 Pedido #{p.numeroLocal}
               </Typography>
@@ -137,8 +125,7 @@ export default function Pedidos() {
             {/* ITEMS */}
             <List dense>
               {(p.items ?? []).map((item, i, arr) => {
-                
-                // 🧠 VARIANTE DINÁMICA (igual que carrito/modal)
+
                 const varianteLabel = item.variante
                   ? [
                       item.variante.talla,
@@ -152,7 +139,6 @@ export default function Pedidos() {
                       .join(" • ")
                   : null;
 
-                // 🖼 IMAGEN CON FALLBACK
                 const imagen =
                   item.variante?.imagenes?.[0]?.imagen ||
                   item.producto?.imagenes?.[0]?.imagen ||
@@ -162,36 +148,22 @@ export default function Pedidos() {
                 return (
                   <Box key={i}>
                     <ListItem sx={pedidosStyles.listItem}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          gap: 2,
-                          alignItems: "center",
-                          width: "100%",
-                        }}
-                      >
-                        {/* IMAGEN */}
+                      <Box sx={pedidosStyles.itemRow}>
                         
-<Box
-  component="img"
-  src={imagen}
-  alt={item.producto?.nombre}
-  sx={{
-    width: { xs: 75, sm: 85 },  // 🔥 ligeramente más grande
-    height: { xs: 75, sm: 85 },
-    objectFit: "contain",
-    borderRadius: 2,
-    p: 0,                       // 🔥 sin espacio interno
-    backgroundColor: "transparent", // ❌ quitamos el fondo
-  }}
-/>
+                        {/* IMAGEN */}
+                        <Box
+                          component="img"
+                          src={imagen}
+                          alt={item.producto?.nombre}
+                          sx={pedidosStyles.image}
+                        />
+
                         {/* INFO */}
-                        <Box sx={{ flex: 1 }}>
+                        <Box sx={pedidosStyles.infoBox}>
                           <Typography fontWeight="bold">
                             {item.producto?.nombre}
                           </Typography>
 
-                          {/* 🔥 VARIANTE COMPLETA */}
                           {varianteLabel && (
                             <Typography
                               variant="body2"
@@ -206,10 +178,7 @@ export default function Pedidos() {
                             {Number(item.precio_unitario ?? 0).toFixed(2)}
                           </Typography>
 
-                          <Typography
-                            variant="body2"
-                            fontWeight="bold"
-                          >
+                          <Typography variant="body2" fontWeight="bold">
                             Subtotal: $
                             {Number(item.subtotal ?? 0).toFixed(2)}
                           </Typography>
@@ -221,6 +190,7 @@ export default function Pedidos() {
                             label={item.estado}
                             color={getEstadoColor(item.estado)}
                             size="small"
+                            sx={pedidosStyles.chip}
                           />
                         )}
                       </Box>
@@ -236,7 +206,12 @@ export default function Pedidos() {
       ))}
 
       {/* PAGINACIÓN */}
-      <Stack direction="row" justifyContent="center" spacing={2} mt={3}>
+      <Stack
+        direction="row"
+        justifyContent="center"
+        spacing={2}
+        sx={pedidosStyles.pagination}
+      >
         <Button
           variant="outlined"
           disabled={page === 1}
@@ -259,4 +234,4 @@ export default function Pedidos() {
       </Stack>
     </Container>
   );
-}
+              }
