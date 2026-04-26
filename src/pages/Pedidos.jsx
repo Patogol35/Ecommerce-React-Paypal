@@ -176,11 +176,14 @@ export default function Pedidos() {
                           src={imagen}
                           alt={item.producto?.nombre}
                           sx={{
-                            width: 60,
-                            height: 60,
-                            objectFit: "contain",
+                           width: 60,
+                           height: 60,
+                         objectFit: "contain",
                             borderRadius: 2,
-                          }}
+                       backgroundColor: "background.paper", 
+                          p: 0.5, 
+                           }}
+                          
                         />
 
                         {/* INFO */}
