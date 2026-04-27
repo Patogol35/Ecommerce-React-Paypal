@@ -95,7 +95,7 @@ export default function Layout() {
       <IconButton
         className="facebook"
         component="a"
-        href="https://facebook.com"
+        href="https://www.facebook.com/share/1C9RgHAPvL/"
         target="_blank"
         rel="noopener"
       >
@@ -107,7 +107,7 @@ export default function Layout() {
       <IconButton
         className="instagram"
         component="a"
-        href="https://instagram.com"
+        href="https://www.instagram.com/jorge_patricio_26"
         target="_blank"
         rel="noopener"
       >
@@ -119,7 +119,7 @@ export default function Layout() {
       <IconButton
         className="linkedin"
         component="a"
-        href="https://linkedin.com"
+        href="https://www.linkedin.com/in/jorge-patricio-santamaría-cherrez-2a73792b2"
         target="_blank"
         rel="noopener"
       >
