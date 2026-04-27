@@ -36,6 +36,7 @@ export default function Carrito() {
 
   useEffect(() => {
     cargarCarrito();
+    window.scrollTo(0, 0);
   }, []);
 
   // =========================
