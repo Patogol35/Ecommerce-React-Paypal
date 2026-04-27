@@ -40,6 +40,6 @@ export const guestMenu = [
   label: "Registrarse",
   path: "/register",
   icon: PersonAddIcon,
-  color: menuColors.primary,
+  color: menuColors.logout,
  },
 ];
