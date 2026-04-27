@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import SearchIcon from "@mui/icons-material/Search";
+import { useState, useEffect } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import SortIcon from "@mui/icons-material/Sort";
 import CategoryIcon from "@mui/icons-material/Category";
@@ -43,10 +44,13 @@ export default function Home() {
     sort,
     itemsPerPage: ITEMS_PER_PAGE,
   });
+  useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}, [page]);
 
   const { handleAdd } = useCarritoHandler();
 
-  // 🔥 FUNCIÓN CLAVE
+  // FUNCIÓN CLAVE
   const handleVerDetalle = (producto, modo = "info") => {
     setProductoSeleccionado(producto);
     setModoModal(modo);
