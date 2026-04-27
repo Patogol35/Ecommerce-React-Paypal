@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import SearchIcon from "@mui/icons-material/Search";
-import { useState, useEffect } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import SortIcon from "@mui/icons-material/Sort";
 import CategoryIcon from "@mui/icons-material/Category";
