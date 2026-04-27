@@ -52,19 +52,14 @@ export default function ProductoDetalle() {
   const [zoomImage, setZoomImage] = useState("");
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
 
-  // 🔥 NUEVO: animación elegante
+  // 🔥 animación PRO
   const [fade, setFade] = useState(true);
+  const [direction, setDirection] = useState(1);
 
   useEffect(() => {
-    const handleMenuOpen = () => {
-      setZoomOpen(false);
-    };
-
+    const handleMenuOpen = () => setZoomOpen(false);
     window.addEventListener("menuOpen", handleMenuOpen);
-
-    return () => {
-      window.removeEventListener("menuOpen", handleMenuOpen);
-    };
+    return () => window.removeEventListener("menuOpen", handleMenuOpen);
   }, []);
 
   useEffect(() => {
@@ -116,9 +111,12 @@ export default function ProductoDetalle() {
     }
   }, [imagenes]);
 
-  // 🔥 CAMBIO CON ANIMACIÓN
-  const cambiarImagen = (imgUrl) => {
+  // 🔥 CAMBIO CON DIRECCIÓN (SLIDE)
+  const cambiarImagen = (imgUrl, index) => {
     if (imgUrl === imagenMostrada) return;
+
+    const currentIndex = imagenes.indexOf(imagenMostrada);
+    setDirection(index > currentIndex ? 1 : -1);
 
     setFade(false);
 
@@ -180,13 +178,13 @@ export default function ProductoDetalle() {
               sx={{
                 ...imagenContainerSx(theme),
                 cursor: "zoom-in",
+                overflow: "hidden", // 🔥 importante para slide
               }}
               onClick={() => {
                 setZoomImage(imagenMostrada);
                 setZoomOpen(true);
               }}
             >
-              {/* 🔥 IMAGEN CON ANIMACIÓN */}
               <Box
                 component="img"
                 src={imagenMostrada}
@@ -195,9 +193,11 @@ export default function ProductoDetalle() {
                   height: "100%",
                   objectFit: "contain",
                   borderRadius: "12px",
-                  transition: "opacity 0.3s ease, transform 0.3s ease",
+                  transition: "all 0.35s ease",
                   opacity: fade ? 1 : 0,
-                  transform: fade ? "scale(1)" : "scale(0.97)",
+                  transform: fade
+                    ? "translateX(0) scale(1)"
+                    : `translateX(${direction * 40}px) scale(0.96)`,
                 }}
               />
             </Box>
@@ -209,7 +209,7 @@ export default function ProductoDetalle() {
                     key={i}
                     component="img"
                     src={img}
-                    onClick={() => cambiarImagen(img)}
+                    onClick={() => cambiarImagen(img, i)}
                     sx={(theme) =>
                       miniaturaSx(imagenMostrada === img, theme)
                     }
