@@ -139,7 +139,7 @@ export default function Login() {
 
     try {
       const res = await fetch(
-        "https://backvariantes.onrender.com/api/google-login/",
+        "https://paypal-karg.onrender.com/api/google-login/",
         {
           method: "POST",
           headers: {
