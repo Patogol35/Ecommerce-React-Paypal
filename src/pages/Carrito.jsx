@@ -138,6 +138,7 @@ export default function Carrito() {
           {/* 🔥 PAYPAL BUTTON */}
           <Box sx={{ mt: 2 }}>
             <PayPalButtons
+  fundingSource="paypal"
   createOrder={async () => {
     try {
       const res = await fetch(
