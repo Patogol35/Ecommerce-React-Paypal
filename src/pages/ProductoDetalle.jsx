@@ -52,7 +52,10 @@ export default function ProductoDetalle() {
   const [zoomImage, setZoomImage] = useState("");
   const [varianteSeleccionada, setVarianteSeleccionada] = useState(null);
 
-  // 🔥 NUEVO: animación elegante
+  // 🔥 evita flash inicial
+  const [initialized, setInitialized] = useState(false);
+
+  // 🔥 animación elegante
   const [fade, setFade] = useState(true);
 
   useEffect(() => {
@@ -68,10 +71,33 @@ export default function ProductoDetalle() {
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const init = async () => {
+      window.scrollTo(0, 0);
+      setInitialized(true);
+    };
+
+    init();
   }, []);
 
-  if (!producto) return <Typography>Producto no encontrado</Typography>;
+  if (!initialized) {
+    return (
+      <Box sx={containerSx}>
+        <Typography align="center">
+          Cargando producto...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (!producto) {
+    return (
+      <Box sx={containerSx}>
+        <Typography align="center">
+          Producto no encontrado
+        </Typography>
+      </Box>
+    );
+  }
 
   const tieneVariantes = producto.variantes?.length > 0;
 
@@ -116,7 +142,6 @@ export default function ProductoDetalle() {
     }
   }, [imagenes]);
 
-  // 🔥 CAMBIO CON ANIMACIÓN
   const cambiarImagen = (imgUrl) => {
     if (imgUrl === imagenMostrada) return;
 
@@ -171,8 +196,12 @@ export default function ProductoDetalle() {
         Regresar
       </Button>
 
-      <Grid container spacing={5} justifyContent="center" alignItems="center">
-
+      <Grid
+        container
+        spacing={5}
+        justifyContent="center"
+        alignItems="center"
+      >
         {/* IMÁGENES */}
         <Grid item xs={12} md={6}>
           <Box sx={imagenWrapperSx}>
@@ -186,7 +215,6 @@ export default function ProductoDetalle() {
                 setZoomOpen(true);
               }}
             >
-              {/* 🔥 IMAGEN CON ANIMACIÓN */}
               <Box
                 component="img"
                 src={imagenMostrada}
@@ -195,7 +223,8 @@ export default function ProductoDetalle() {
                   height: "100%",
                   objectFit: "contain",
                   borderRadius: "12px",
-                  transition: "opacity 0.3s ease, transform 0.3s ease",
+                  transition:
+                    "opacity 0.3s ease, transform 0.3s ease",
                   opacity: fade ? 1 : 0,
                   transform: fade ? "scale(1)" : "scale(0.97)",
                 }}
@@ -256,7 +285,11 @@ export default function ProductoDetalle() {
                         key={v.id}
                         onClick={() => setVarianteSeleccionada(v)}
                         disabled={v.stock === 0}
-                        sx={varianteBtnSx(isSelected, v.stock, theme)}
+                        sx={varianteBtnSx(
+                          isSelected,
+                          v.stock,
+                          theme
+                        )}
                       >
                         {label || "Única"}
                       </Button>
@@ -310,13 +343,23 @@ export default function ProductoDetalle() {
       </Grid>
 
       {/* ZOOM */}
-      <Dialog open={zoomOpen} onClose={() => setZoomOpen(false)}>
+      <Dialog
+        open={zoomOpen}
+        onClose={() => setZoomOpen(false)}
+      >
         <Box sx={zoomContainerSx(theme)}>
-          <IconButton onClick={() => setZoomOpen(false)} sx={zoomCloseBtnSx}>
+          <IconButton
+            onClick={() => setZoomOpen(false)}
+            sx={zoomCloseBtnSx}
+          >
             <CloseIcon />
           </IconButton>
 
-          <Box component="img" src={zoomImage} sx={zoomImagenSx} />
+          <Box
+            component="img"
+            src={zoomImage}
+            sx={zoomImagenSx}
+          />
         </Box>
       </Dialog>
     </Box>
