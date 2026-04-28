@@ -71,6 +71,20 @@ export default function Carrito() {
     }
   };
 
+  // 🔥 SI NO HAY TOKEN, NO MOSTRAR PAYPAL
+  if (!access) {
+    return (
+      <Box sx={styles.root}>
+        <Typography align="center">
+          Debes iniciar sesión para pagar
+        </Typography>
+        <Button onClick={() => navigate("/login")}>
+          Ir a login
+        </Button>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={styles.root}>
       {/* HEADER */}
@@ -135,73 +149,97 @@ export default function Carrito() {
             Total: {total.toFixed(2)}
           </Typography>
 
-          {/* 🔥 PAYPAL BUTTON */}
+          {/* 🔥 PAYPAL */}
           <Box sx={{ mt: 2 }}>
             <PayPalButtons
-  createOrder={async () => {
-    try {
-      const res = await fetch(
-        "https://paypal-karg.onrender.com/api/paypal/crear-orden/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access}`,
-          },
-        }
-      );
+              createOrder={async () => {
+                console.log("TOKEN:", access);
 
-      const data = await res.json();
+                const res = await fetch(
+                  "https://paypal-karg.onrender.com/api/paypal/crear-orden/",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access}`,
+                    },
+                  }
+                );
 
-      if (!res.ok) {
-        throw new Error(data.error || "Error creando orden");
-      }
+                const text = await res.text();
+                console.log("RESPUESTA BACKEND:", text);
 
-      return data.id;
-    } catch (err) {
-      toast.error(err.message);
-    }
-  }}
+                let data;
 
-  onApprove={async (data) => {
-    try {
-      const res = await fetch(
-        "https://paypal-karg.onrender.com/api/paypal/capturar/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access}`,
-          },
-          body: JSON.stringify({
-            orderID: data.orderID,
-          }),
-        }
-      );
+                try {
+                  data = JSON.parse(text);
+                } catch {
+                  throw new Error(
+                    "El servidor devolvió HTML (error backend)"
+                  );
+                }
 
-      const result = await res.json();
+                if (!res.ok) {
+                  throw new Error(
+                    data.error || "Error creando orden"
+                  );
+                }
 
-      if (!res.ok) {
-        throw new Error(result.error || "Error al capturar pago");
-      }
+                return data.id;
+              }}
 
-      toast.success("Pago realizado con éxito 💰");
+              onApprove={async (data) => {
+                try {
+                  const res = await fetch(
+                    "https://paypal-karg.onrender.com/api/paypal/capturar/",
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access}`,
+                      },
+                      body: JSON.stringify({
+                        orderID: data.orderID,
+                      }),
+                    }
+                  );
 
-      limpiarLocal();
-      navigate("/pedidos");
-    } catch (err) {
-      toast.error(err.message);
-    }
-  }}
+                  const text = await res.text();
+                  console.log("CAPTURE RESPONSE:", text);
 
-  onError={(err) => {
-    console.error(err);
-    toast.error("Error con PayPal");
-  }}
-/>
+                  let result;
+
+                  try {
+                    result = JSON.parse(text);
+                  } catch {
+                    throw new Error(
+                      "Error procesando respuesta del servidor"
+                    );
+                  }
+
+                  if (!res.ok) {
+                    throw new Error(
+                      result.error || "Error al capturar pago"
+                    );
+                  }
+
+                  toast.success("Pago realizado con éxito 💰");
+
+                  limpiarLocal();
+                  navigate("/pedidos");
+                } catch (err) {
+                  toast.error(err.message);
+                }
+              }}
+
+              onError={(err) => {
+                console.error("PAYPAL ERROR:", err);
+                toast.error("Error con PayPal");
+              }}
+            />
           </Box>
         </Box>
       )}
     </Box>
   );
-}
+                }
