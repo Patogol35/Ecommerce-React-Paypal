@@ -72,7 +72,7 @@ function AppContent() {
 
 function App() {
   return (
-    <GoogleOAuthProvider clientId="6793546722-ro4pd9ldsdrrl4l9k0jdm0pbl7f5ppu0.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="6793546722-pv1lpfoii9r4iibphcjfhe0vaef206t9.apps.googleusercontent.com">
       
       {/* 🔥 PAYPAL GLOBAL */}
       <PayPalScriptProvider
