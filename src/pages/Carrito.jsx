@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCarrito } from "../context/CarritoContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -36,8 +36,16 @@ export default function Carrito() {
   const { access } = useAuth();
   const navigate = useNavigate();
 
+  // 🔥 NUEVO: evita flicker
+  const [initialized, setInitialized] = useState(false);
+
   useEffect(() => {
-    cargarCarrito();
+    const init = async () => {
+      await cargarCarrito();
+      setInitialized(true);
+    };
+
+    init();
     window.scrollTo(0, 0);
   }, []);
 
@@ -71,7 +79,18 @@ export default function Carrito() {
     }
   };
 
-  // 🔥 SI NO HAY TOKEN, NO MOSTRAR PAYPAL
+  // 🔒 BLOQUEO TOTAL HASTA CARGA INICIAL
+  if (!initialized) {
+    return (
+      <Box sx={styles.root}>
+        <Typography align="center">
+          Cargando carrito...
+        </Typography>
+      </Box>
+    );
+  }
+
+  // 🔐 SI NO HAY TOKEN
   if (!access) {
     return (
       <Box sx={styles.root}>
@@ -99,11 +118,10 @@ export default function Carrito() {
         Mi Carrito
       </Typography>
 
-      {/* LOADING */}
-      {loading && <Typography>Cargando carrito...</Typography>}
-
-      {/* VACÍO */}
-      {!loading && items.length === 0 && (
+      {/* CONTENIDO CONTROLADO */}
+      {loading ? (
+        <Typography align="center">Cargando carrito...</Typography>
+      ) : items.length === 0 ? (
         <Box sx={styles.emptyState}>
           <RemoveShoppingCartIcon
             color="disabled"
@@ -126,120 +144,109 @@ export default function Carrito() {
             Ir a comprar
           </Button>
         </Box>
-      )}
+      ) : (
+        <>
+          {/* ITEMS */}
+          {items.map((it) => (
+            <CarritoItem
+              key={it.id}
+              it={it}
+              incrementar={incrementar}
+              decrementar={decrementar}
+              setCantidad={setCantidad}
+              eliminarItem={eliminarItem}
+            />
+          ))}
 
-      {/* ITEMS */}
-      {!loading &&
-        items.map((it) => (
-          <CarritoItem
-            key={it.id}
-            it={it}
-            incrementar={incrementar}
-            decrementar={decrementar}
-            setCantidad={setCantidad}
-            eliminarItem={eliminarItem}
-          />
-        ))}
+          <Divider sx={{ my: 3 }} />
 
-      {/* FOOTER */}
-      {!loading && items.length > 0 && (
-        <Box sx={styles.footerBox(theme)}>
-          <Typography variant="h6" sx={styles.total(theme)}>
-            <MonetizationOnIcon fontSize="small" />
-            Total: {total.toFixed(2)}
-          </Typography>
+          {/* FOOTER */}
+          <Box sx={styles.footerBox(theme)}>
+            <Typography variant="h6" sx={styles.total(theme)}>
+              <MonetizationOnIcon fontSize="small" />
+              Total: {total.toFixed(2)}
+            </Typography>
 
-          {/* 🔥 PAYPAL */}
-          <Box sx={{ mt: 2 }}>
-            <PayPalButtons
-              createOrder={async () => {
-                console.log("TOKEN:", access);
-
-                const res = await fetch(
-                  "https://paypal-karg.onrender.com/api/paypal/crear-orden/",
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access}`,
-                    },
-                  }
-                );
-
-                const text = await res.text();
-                console.log("RESPUESTA BACKEND:", text);
-
-                let data;
-
-                try {
-                  data = JSON.parse(text);
-                } catch {
-                  throw new Error(
-                    "El servidor devolvió HTML (error backend)"
-                  );
-                }
-
-                if (!res.ok) {
-                  throw new Error(
-                    data.error || "Error creando orden"
-                  );
-                }
-
-                return data.id;
-              }}
-
-              onApprove={async (data) => {
-                try {
+            {/* PAYPAL */}
+            <Box sx={{ mt: 2 }}>
+              <PayPalButtons
+                createOrder={async () => {
                   const res = await fetch(
-                    "https://paypal-karg.onrender.com/api/paypal/capturar/",
+                    "https://paypal-karg.onrender.com/api/paypal/crear-orden/",
                     {
                       method: "POST",
                       headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${access}`,
                       },
-                      body: JSON.stringify({
-                        orderID: data.orderID,
-                      }),
                     }
                   );
 
                   const text = await res.text();
-                  console.log("CAPTURE RESPONSE:", text);
 
-                  let result;
-
+                  let data;
                   try {
-                    result = JSON.parse(text);
+                    data = JSON.parse(text);
                   } catch {
-                    throw new Error(
-                      "Error procesando respuesta del servidor"
-                    );
+                    throw new Error("Error en respuesta del servidor");
                   }
 
                   if (!res.ok) {
-                    throw new Error(
-                      result.error || "Error al capturar pago"
-                    );
+                    throw new Error(data.error || "Error creando orden");
                   }
 
-                  toast.success("Pago realizado con éxito 💰");
+                  return data.id;
+                }}
 
-                  limpiarLocal();
-                  navigate("/pedidos");
-                } catch (err) {
-                  toast.error(err.message);
-                }
-              }}
+                onApprove={async (data) => {
+                  try {
+                    const res = await fetch(
+                      "https://paypal-karg.onrender.com/api/paypal/capturar/",
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${access}`,
+                        },
+                        body: JSON.stringify({
+                          orderID: data.orderID,
+                        }),
+                      }
+                    );
 
-              onError={(err) => {
-                console.error("PAYPAL ERROR:", err);
-                toast.error("Error con PayPal");
-              }}
-            />
+                    const text = await res.text();
+
+                    let result;
+                    try {
+                      result = JSON.parse(text);
+                    } catch {
+                      throw new Error("Error procesando respuesta");
+                    }
+
+                    if (!res.ok) {
+                      throw new Error(
+                        result.error || "Error al capturar pago"
+                      );
+                    }
+
+                    toast.success("Pago realizado con éxito 💰");
+
+                    limpiarLocal();
+                    navigate("/pedidos");
+                  } catch (err) {
+                    toast.error(err.message);
+                  }
+                }}
+
+                onError={(err) => {
+                  console.error("PAYPAL ERROR:", err);
+                  toast.error("Error con PayPal");
+                }}
+              />
+            </Box>
           </Box>
-        </Box>
+        </>
       )}
     </Box>
   );
-                }
+    }
