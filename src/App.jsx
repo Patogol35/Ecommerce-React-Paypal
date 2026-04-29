@@ -77,7 +77,7 @@ function App() {
       {/* 🔥 PAYPAL GLOBAL */}
       <PayPalScriptProvider
   options={{
-    "client-id": "AddgCeYrXYcV0KzVcPTdbGn_W4yEFhcKYPGGfBlUVWEx4p0PiSjs93o_fG_-8n8-LRBwuQqFST3LnbYt",
+    "client-id": "ATcBjmHPl7_b2zzC1FKSForT_83vQc5zbX6P7k3EAJHAHcGC-lXVNmz7kqM7N9hIgnA_xbP7NVxh_tVl",
     currency: "USD",
   }}
 >
