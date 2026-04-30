@@ -152,7 +152,7 @@ export default function Register() {
 
     try {
       const res = await fetch(
-        "https://backvariantes.onrender.com/api/google-login/",
+        "https://paypal-karg.onrender.com/api/google-login/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
